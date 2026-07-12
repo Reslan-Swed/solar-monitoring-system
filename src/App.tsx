@@ -13,6 +13,7 @@ import { ForgotPasswordForm } from './components/auth/ForgotPasswordForm';
 import { Sidebar } from './components/layout/Sidebar';
 import { Navbar } from './components/layout/Navbar';
 import { Footer } from './components/layout/Footer';
+import { cn } from './lib/utils';
 import { Zap } from 'lucide-react';
 import { format, subDays } from 'date-fns';
 import { DeviceList } from './components/dashboard/DeviceList';
@@ -111,6 +112,9 @@ export default function App() {
     }
     return { ...MOCK_SETTINGS };
   });
+
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -314,12 +318,25 @@ export default function App() {
           setHistoryDevice(null);
         }}
         onLogout={handleLogout}
+        isCollapsed={isSidebarCollapsed}
+        setIsCollapsed={setIsSidebarCollapsed}
+        isOpen={isSidebarOpen}
+        setIsOpen={setIsSidebarOpen}
       />
 
-      <div className="pl-64 flex flex-col min-h-screen">
-        <Navbar user={user} title={currentTitle} latestAlert={latestAlert} />
+      <div className={cn(
+        "flex flex-col min-h-screen transition-all duration-300",
+        isSidebarCollapsed ? "lg:pl-20" : "lg:pl-64"
+      )}>
+        <Navbar 
+          user={user} 
+          title={currentTitle} 
+          latestAlert={latestAlert} 
+          onMenuClick={() => setIsSidebarOpen(true)}
+          isSidebarCollapsed={isSidebarCollapsed}
+        />
 
-        <main className="flex-1 pt-24 pb-0 px-8 max-w-[1600px] mx-auto w-full flex flex-col">
+        <main className="flex-1 pt-24 pb-0 px-4 sm:px-8 max-w-[1600px] mx-auto w-full flex flex-col">
           <div className="flex-1 pb-12">
             {isLoading && (
               <div className="fixed inset-0 bg-white/50 dark:bg-slate-950/50 backdrop-blur-sm z-50 flex items-center justify-center transition-colors">

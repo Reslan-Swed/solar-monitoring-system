@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Search, User as UserIcon, Bell, AlertCircle, AlertTriangle, Info, X, Calendar } from 'lucide-react';
+import { Search, User as UserIcon, Bell, AlertCircle, AlertTriangle, Info, X, Calendar, Menu } from 'lucide-react';
 import { EventLogItem } from '@/src/api-types';
 import { User } from '@/src/types';
 import { cn } from '@/src/lib/utils';
@@ -8,9 +8,11 @@ interface NavbarProps {
   user: User;
   title: string;
   latestAlert?: EventLogItem | null;
+  onMenuClick: () => void;
+  isSidebarCollapsed: boolean;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ user, title, latestAlert }) => {
+export const Navbar: React.FC<NavbarProps> = ({ user, title, latestAlert, onMenuClick, isSidebarCollapsed }) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -43,9 +45,18 @@ export const Navbar: React.FC<NavbarProps> = ({ user, title, latestAlert }) => {
   };
 
   return (
-    <header className="h-16 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between px-8 fixed top-0 right-0 left-64 z-10">
-      <div className="flex flex-col">
-        <h1 className="text-xl font-bold text-slate-900 dark:text-white capitalize">{title}</h1>
+    <header className={cn(
+      "h-16 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 flex items-center justify-between px-4 sm:px-8 fixed top-0 right-0 z-40 transition-all duration-300",
+      isSidebarCollapsed ? "left-0 lg:left-20" : "left-0 lg:left-64"
+    )}>
+      <div className="flex items-center gap-4">
+        <button 
+          onClick={onMenuClick}
+          className="lg:hidden p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400"
+        >
+          <Menu className="w-6 h-6" />
+        </button>
+        <h1 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white capitalize truncate max-w-[150px] sm:max-w-none">{title}</h1>
       </div>
 
       <div className="flex items-center gap-6">

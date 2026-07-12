@@ -207,7 +207,7 @@ export const DeviceRateModal: React.FC<DeviceRateModalProps> = ({ device, onClos
                   <StatItem label="Output Rated" value={data.outputVoltage} unit="V" />
                   <StatItem label="Rated Power" value={data.outputPowerW} unit="W" />
                   <StatItem label="Rated Apparent" value={data.outputPowerVa} unit="VA" />
-                  <StatItem label="Battery Rated" value={data.batteryVoltage} unit="V" />
+                  <StatItem label="Battery Rated" value={+data.batteryVoltage > 0 ? (+data.batteryVoltage / 10).toFixed(1) : '0'} unit="V" />
                   <StatItem label="Rated Freq" value={(data.outputFrenquency / 100).toFixed(1)} unit="Hz" />
                 </div>
               </section>

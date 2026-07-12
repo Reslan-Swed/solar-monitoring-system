@@ -94,11 +94,21 @@ export const DeviceCard: React.FC<DeviceCardProps> = ({ device, onClick, onDelet
           device.status === 'warning' ? "bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-500" :
           device.status === 'error' ? "bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-500" : "bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400"
         )}>
-          <span className={cn("w-1.5 h-1.5 rounded-full animate-pulse", 
-            device.status === 'online' ? "bg-emerald-500" : 
-            device.status === 'warning' ? "bg-amber-500" : 
-            device.status === 'error' ? "bg-red-500" : "bg-slate-400"
-          )}></span>
+          <div className="relative flex items-center justify-center">
+            <span className={cn("w-1.5 h-1.5 rounded-full relative z-10", 
+              device.status === 'online' ? "bg-emerald-500" : 
+              device.status === 'warning' ? "bg-amber-500" : 
+              device.status === 'error' ? "bg-red-500" : "bg-slate-400"
+            )}></span>
+            {device.status === 'online' && (
+              <motion.span 
+                initial={{ scale: 1, opacity: 0.8 }}
+                animate={{ scale: 2.5, opacity: 0 }}
+                transition={{ duration: 2, repeat: Infinity, ease: "easeOut" }}
+                className="absolute w-1.5 h-1.5 rounded-full bg-emerald-500"
+              />
+            )}
+          </div>
           {device.status.toUpperCase()}
         </div>
       </div>

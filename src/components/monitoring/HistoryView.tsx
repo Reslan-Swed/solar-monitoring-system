@@ -280,14 +280,14 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ device, onBack }) => {
                 type="date" 
                 value={exportDate}
                 onChange={(e) => setExportDate(e.target.value)}
-                className="text-xs font-bold text-slate-600 dark:text-slate-300 bg-transparent outline-none cursor-pointer pr-2"
+                className="text-xs font-bold text-slate-600 dark:text-slate-300 bg-transparent outline-none cursor-pointer pr-2 dark:[color-scheme:dark] text-current"
               />
             ) : (
               <input 
                 type="month" 
                 value={exportMonth}
                 onChange={(e) => setExportMonth(e.target.value)}
-                className="text-xs font-bold text-slate-600 dark:text-slate-300 bg-transparent outline-none cursor-pointer pr-2"
+                className="text-xs font-bold text-slate-600 dark:text-slate-300 bg-transparent outline-none cursor-pointer pr-2 dark:[color-scheme:dark] text-current"
               />
             )}
           </div>
@@ -565,6 +565,7 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ device, onBack }) => {
                 <th className="px-6 py-4 text-xs font-bold text-slate-400 dark:text-slate-500 uppercase whitespace-nowrap">Mode</th>
                 <th className="px-6 py-4 text-xs font-bold text-slate-400 dark:text-slate-500 uppercase whitespace-nowrap">PV Power (W)</th>
                 <th className="px-6 py-4 text-xs font-bold text-slate-400 dark:text-slate-500 uppercase whitespace-nowrap">PV Voltage (V)</th>
+                <th className="px-6 py-4 text-xs font-bold text-slate-400 dark:text-slate-500 uppercase whitespace-nowrap">PV Cur (A)</th>
                 <th className="px-6 py-4 text-xs font-bold text-slate-400 dark:text-slate-500 uppercase whitespace-nowrap">Bat Capacity (%)</th>
                 <th className="px-6 py-4 text-xs font-bold text-slate-400 dark:text-slate-500 uppercase whitespace-nowrap">Bat Voltage (V)</th>
                 <th className="px-6 py-4 text-xs font-bold text-slate-400 dark:text-slate-500 uppercase whitespace-nowrap">Bat Dis. Pwr (W)</th>
@@ -584,7 +585,6 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ device, onBack }) => {
                 <th className="px-6 py-4 text-xs font-bold text-slate-400 dark:text-slate-500 uppercase whitespace-nowrap">Out2 Freq (Hz)</th>
                 <th className="px-6 py-4 text-xs font-bold text-slate-400 dark:text-slate-500 uppercase whitespace-nowrap">Max Temp (°C)</th>
                 <th className="px-6 py-4 text-xs font-bold text-slate-400 dark:text-slate-500 uppercase whitespace-nowrap">Inner Temp (°C)</th>
-                <th className="px-6 py-4 text-xs font-bold text-slate-400 dark:text-slate-500 uppercase whitespace-nowrap">Cur In 1 (A)</th>
                 <th className="px-6 py-4 text-xs font-bold text-slate-400 dark:text-slate-500 uppercase whitespace-nowrap">Fault</th>
               </tr>
             </thead>
@@ -601,6 +601,7 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ device, onBack }) => {
                   </td>
                   <td className="px-6 py-4 text-sm text-slate-900 dark:text-white font-bold whitespace-nowrap">{log.pvInputPower1}</td>
                   <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400 whitespace-nowrap">{log.pvInputVoltage1}</td>
+                  <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400 whitespace-nowrap">{log.currentInput1}</td>
                   <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400 whitespace-nowrap">{log.batteryCapacity}%</td>
                   <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400 whitespace-nowrap">{log.batteryVoltage}</td>
                   <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400 whitespace-nowrap">{log.batteryDischargingPower}</td>
@@ -620,7 +621,6 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ device, onBack }) => {
                   <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400 whitespace-nowrap">{log.output2Frequency}</td>
                   <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400 whitespace-nowrap">{log.maxTemperature}</td>
                   <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400 whitespace-nowrap">{log.innerTemperature}</td>
-                  <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400 whitespace-nowrap">{log.currentInput1}</td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={cn(
                       "px-2 py-1 rounded text-[10px] font-bold",

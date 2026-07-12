@@ -154,7 +154,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLogin, onRegisterClick, 
               method === 'password' ? "bg-white dark:bg-slate-700 text-amber-600 dark:text-amber-400 shadow-sm" : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
             )}
           >
-            Password
+            Username Login
           </button>
           <button
             onClick={() => { setMethod('email'); setError(null); }}

@@ -2,11 +2,11 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Device } from '@/src/types';
 import { TelemetryData } from '@/src/api-types';
 import { api } from '@/src/lib/api';
-import { 
-  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area 
+import {
+  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area
 } from 'recharts';
-import { 
-  Zap, Thermometer, Activity, ArrowLeft, RefreshCw, Battery, 
+import {
+  Zap, Thermometer, Activity, ArrowLeft, RefreshCw, Battery,
   Cpu, Power, Gauge, Droplets, Wind, Sun, Loader2, Info
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
@@ -30,14 +30,14 @@ export const RealTimeMonitor: React.FC<RealTimeMonitorProps> = ({ device, onBack
       const data = await api.getRealTimeTelemetry(device.deviceSn);
       setTelemetry(data);
       setLastUpdated(new Date());
-      
+
       // Update local history for the chart
       const newHistoryPoint = {
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
         power: data.acOutputActivePowerTotal,
         pv: parseFloat(data.pvInputPower1)
       };
-      
+
       setHistory(prev => {
         const next = [...prev, newHistoryPoint];
         if (next.length > 20) return next.slice(1);
@@ -82,21 +82,21 @@ export const RealTimeMonitor: React.FC<RealTimeMonitorProps> = ({ device, onBack
 
   const calculateBatteryEstimation = () => {
     if (telemetry?.workMode !== 'B') return null;
-    
+
     const capacity = parseFloat(telemetry?.batteryCapacity || '0');
     const dischargePower = parseFloat(telemetry?.batteryDischargingPower || '0');
-    
+
     if (dischargePower <= 0 || capacity <= 0) return null;
 
     // Assuming a standard 5.12kWh battery bank (100Ah @ 51.2V) for estimation
     // If we had the actual Ah from settings, we'd use that.
-    const totalEnergyWh = 5120; 
+    const totalEnergyWh = 5120;
     const remainingEnergyWh = totalEnergyWh * (capacity / 100);
     const hoursRemaining = remainingEnergyWh / dischargePower;
-    
+
     const h = Math.floor(hoursRemaining);
     const m = Math.round((hoursRemaining - h) * 60);
-    
+
     return { h, m };
   };
 
@@ -114,7 +114,7 @@ export const RealTimeMonitor: React.FC<RealTimeMonitorProps> = ({ device, onBack
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-center gap-4">
-          <button 
+          <button
             onClick={onBack}
             className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-all"
           >
@@ -135,8 +135,8 @@ export const RealTimeMonitor: React.FC<RealTimeMonitorProps> = ({ device, onBack
             </div>
           </div>
         </div>
-        
-        <button 
+
+        <button
           onClick={fetchData}
           disabled={isLoading}
           className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all disabled:opacity-50"
@@ -148,11 +148,11 @@ export const RealTimeMonitor: React.FC<RealTimeMonitorProps> = ({ device, onBack
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
         {mainStats.map((stat, i) => (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.1 }}
-            key={stat.label} 
+            key={stat.label}
             className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm"
           >
             <div className="flex items-center gap-3 mb-2">
@@ -193,18 +193,18 @@ export const RealTimeMonitor: React.FC<RealTimeMonitorProps> = ({ device, onBack
                 </div>
               </div>
             </div>
-            
+
             <div className="h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={history}>
                   <defs>
                     <linearGradient id="colorPV" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.1}/>
-                      <stop offset="95%" stopColor="#f59e0b" stopOpacity={0}/>
+                      <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.1} />
+                      <stop offset="95%" stopColor="#f59e0b" stopOpacity={0} />
                     </linearGradient>
                     <linearGradient id="colorAC" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.1}/>
-                      <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                      <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.1} />
+                      <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#334155" opacity={0.1} />
@@ -245,7 +245,7 @@ export const RealTimeMonitor: React.FC<RealTimeMonitorProps> = ({ device, onBack
                   <span className="text-sm text-slate-500 dark:text-slate-400 font-medium">Charge Current</span>
                   <span className="font-bold text-slate-900 dark:text-white">{telemetry?.chargingCurrent} A</span>
                 </div>
-                <div className="flex justify-between items-center py-3">
+                <div className="flex justify-between items-center py-3 border-b border-slate-50 dark:border-slate-800">
                   <span className="text-sm text-slate-500 dark:text-slate-400 font-medium">Discharge Power</span>
                   <span className="font-bold text-slate-900 dark:text-white">{telemetry?.batteryDischargingPower} W</span>
                 </div>
@@ -267,11 +267,20 @@ export const RealTimeMonitor: React.FC<RealTimeMonitorProps> = ({ device, onBack
                   <span className="font-bold text-slate-900 dark:text-white">{telemetry?.gridVoltageR} V</span>
                 </div>
                 <div className="flex justify-between items-center py-3 border-b border-slate-50 dark:border-slate-800">
+                  <span className="text-sm text-slate-500 dark:text-slate-400 font-medium">Grid Current</span>
+                  <span className="font-bold text-slate-900 dark:text-white">{(+telemetry?.gridPowerInputActiveTotal > 0 && +telemetry?.gridVoltageR > 0) ? (+telemetry?.gridPowerInputActiveTotal / +telemetry?.gridVoltageR).toFixed(1) : '0'} A</span>
+                </div>
+                <div className="flex justify-between items-center py-3 border-b border-slate-50 dark:border-slate-800">
                   <span className="text-sm text-slate-500 dark:text-slate-400 font-medium">Grid Frequency</span>
                   <span className="font-bold text-slate-900 dark:text-white">{telemetry?.gridFrequency} Hz</span>
-                </div><div className="flex justify-between items-center py-3 border-b border-slate-50 dark:border-slate-800">
+                </div>
+                <div className="flex justify-between items-center py-3 border-b border-slate-50 dark:border-slate-800">
                   <span className="text-sm text-slate-500 dark:text-slate-400 font-medium">AC Output Voltage</span>
                   <span className="font-bold text-slate-900 dark:text-white">{telemetry?.acOutputVoltageR} V</span>
+                </div>
+                <div className="flex justify-between items-center py-3 border-b border-slate-50 dark:border-slate-800">
+                  <span className="text-sm text-slate-500 dark:text-slate-400 font-medium">AC Output Current</span>
+                  <span className="font-bold text-slate-900 dark:text-white">{(telemetry?.acOutputApparentPowerTotal > 0 && +telemetry?.acOutputVoltageR > 0) ? (telemetry?.acOutputApparentPowerTotal / +telemetry?.acOutputVoltageR).toFixed(1) : '0'} A</span>
                 </div>
                 <div className="flex justify-between items-center py-3 border-b border-slate-50 dark:border-slate-800">
                   <span className="text-sm text-slate-500 dark:text-slate-400 font-medium">AC Output Frequency</span>
@@ -290,12 +299,12 @@ export const RealTimeMonitor: React.FC<RealTimeMonitorProps> = ({ device, onBack
             </h3>
             <div className="space-y-4">
               <div className="flex justify-between items-center py-2 border-b border-slate-50 dark:border-slate-800">
-                <span className="text-sm text-slate-500 dark:text-slate-400 font-medium">PV Power</span>
-                <span className="font-bold text-slate-900 dark:text-white">{telemetry?.pvInputPower1} W</span>
-              </div>
-              <div className="flex justify-between items-center py-2">
                 <span className="text-sm text-slate-500 dark:text-slate-400 font-medium">PV Voltage</span>
                 <span className="font-bold text-slate-900 dark:text-white">{telemetry?.pvInputVoltage1} V</span>
+              </div>
+              <div className="flex justify-between items-center py-2 border-b border-slate-50 dark:border-slate-800">
+                <span className="text-sm text-slate-500 dark:text-slate-400 font-medium">PV Current</span>
+                <span className="font-bold text-slate-900 dark:text-white">{telemetry?.currentInput1} A</span>
               </div>
             </div>
           </div>
@@ -312,8 +321,8 @@ export const RealTimeMonitor: React.FC<RealTimeMonitorProps> = ({ device, onBack
                   <span className="text-sm font-bold text-slate-900 dark:text-white">{telemetry?.innerTemperature}°C</span>
                 </div>
                 <div className="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
-                  <div 
-                    className="bg-orange-500 h-full rounded-full transition-all duration-1000" 
+                  <div
+                    className="bg-orange-500 h-full rounded-full transition-all duration-1000"
                     style={{ width: `${Math.min(100, (parseFloat(telemetry?.innerTemperature || '0') / 80) * 100)}%` }}
                   ></div>
                 </div>
@@ -324,8 +333,8 @@ export const RealTimeMonitor: React.FC<RealTimeMonitorProps> = ({ device, onBack
                   <span className="text-sm font-bold text-slate-900 dark:text-white">{telemetry?.maxTemperature}°C</span>
                 </div>
                 <div className="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
-                  <div 
-                    className="bg-red-500 h-full rounded-full transition-all duration-1000" 
+                  <div
+                    className="bg-red-500 h-full rounded-full transition-all duration-1000"
                     style={{ width: `${Math.min(100, (parseFloat(telemetry?.maxTemperature || '0') / 80) * 100)}%` }}
                   ></div>
                 </div>
@@ -339,19 +348,19 @@ export const RealTimeMonitor: React.FC<RealTimeMonitorProps> = ({ device, onBack
               Generator & Aux
             </h3>
             <div className="space-y-4">
-              <div className="flex justify-between items-center py-2">
+              <div className="flex justify-between items-center py-2 border-b border-slate-50 dark:border-slate-800">
                 <span className="text-sm text-slate-500 dark:text-slate-400 font-medium">Gen Voltage</span>
                 <span className="font-bold text-slate-900 dark:text-white">{telemetry?.generatorInputVoltage} V</span>
               </div>
-              <div className="flex justify-between items-center py-2">
+              <div className="flex justify-between items-center py-2 border-b border-slate-50 dark:border-slate-800">
                 <span className="text-sm text-slate-500 dark:text-slate-400 font-medium">Gen Frequency</span>
                 <span className="font-bold text-slate-900 dark:text-white">{telemetry?.generatorInputFrequency} Hz</span>
               </div>
-              <div className="flex justify-between items-center py-2">
+              <div className="flex justify-between items-center py-2 border-b border-slate-50 dark:border-slate-800">
                 <span className="text-sm text-slate-500 dark:text-slate-400 font-medium">Output 2 Voltage</span>
                 <span className="font-bold text-slate-900 dark:text-white">{telemetry?.output2Voltage} V</span>
               </div>
-              <div className="flex justify-between items-center py-2">
+              <div className="flex justify-between items-center py-2 border-b border-slate-50 dark:border-slate-800">
                 <span className="text-sm text-slate-500 dark:text-slate-400 font-medium">Output 2 Frequency</span>
                 <span className="font-bold text-slate-900 dark:text-white">{telemetry?.output2Frequency} Hz</span>
               </div>
