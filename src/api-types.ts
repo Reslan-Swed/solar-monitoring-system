@@ -68,6 +68,11 @@ export interface TelemetryData {
   generatorInputFrequency: string;
   output2Voltage: string;
   output2Frequency: string;
+  statusBattery?: number;
+  statusLoad?: number;
+  statusGrid?: number;
+  statusSolar1?: number;
+  statusInverter?: number;
   deviceSn: string;
   currentTime: string;
   createTime: string;

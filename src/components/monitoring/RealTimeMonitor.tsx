@@ -17,6 +17,26 @@ interface RealTimeMonitorProps {
   onBack: () => void;
 }
 
+const StatusRow: React.FC<{ 
+  label: string; 
+  value: number | undefined; 
+  mapping: Record<number, { label: string; color: string; bg: string }> 
+}> = ({ label, value, mapping }) => {
+  const status = value !== undefined ? mapping[value] : null;
+  return (
+    <div className="flex justify-between items-center py-2 border-b border-slate-50 dark:border-slate-800 last:border-0">
+      <span className="text-sm text-slate-500 dark:text-slate-400 font-medium">{label}</span>
+      {status ? (
+        <span className={cn("px-2 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider", status.color, status.bg)}>
+          {status.label}
+        </span>
+      ) : (
+        <span className="text-xs font-bold text-slate-400">N/A</span>
+      )}
+    </div>
+  );
+};
+
 export const RealTimeMonitor: React.FC<RealTimeMonitorProps> = ({ device, onBack }) => {
   const [telemetry, setTelemetry] = useState<TelemetryData | null>(null);
   const [history, setHistory] = useState<any[]>([]);
@@ -90,7 +110,7 @@ export const RealTimeMonitor: React.FC<RealTimeMonitorProps> = ({ device, onBack
 
     // Assuming a standard 5.12kWh battery bank (100Ah @ 51.2V) for estimation
     // If we had the actual Ah from settings, we'd use that.
-    const totalEnergyWh = 5120;
+    const totalEnergyWh = 2500;
     const remainingEnergyWh = totalEnergyWh * (capacity / 100);
     const hoursRemaining = remainingEnergyWh / dischargePower;
 
@@ -292,6 +312,57 @@ export const RealTimeMonitor: React.FC<RealTimeMonitorProps> = ({ device, onBack
         </div>
 
         <div className="space-y-6">
+          <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+            <h3 className="font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
+              <Activity className="w-5 h-5 text-amber-500" />
+              System Status
+            </h3>
+            <div className="space-y-4">
+              <StatusRow 
+                label="Solar Status" 
+                value={telemetry?.statusSolar1} 
+                mapping={{
+                  0: { label: 'No Solar', color: 'text-slate-500', bg: 'bg-slate-50 dark:bg-slate-800' },
+                  1: { label: 'Solar Available', color: 'text-amber-500', bg: 'bg-amber-50 dark:bg-amber-900/20' }
+                }}
+              />
+              <StatusRow 
+                label="Battery Status" 
+                value={telemetry?.statusBattery} 
+                mapping={{
+                  0: { label: 'Idle', color: 'text-slate-500', bg: 'bg-slate-50 dark:bg-slate-800' },
+                  1: { label: 'Charging', color: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-900/20' },
+                  2: { label: 'Discharging', color: 'text-amber-500', bg: 'bg-amber-50 dark:bg-amber-900/20' }
+                }}
+              />
+              <StatusRow 
+                label="Grid Status" 
+                value={telemetry?.statusGrid} 
+                mapping={{
+                  0: { label: 'No Grid', color: 'text-slate-500', bg: 'bg-slate-50 dark:bg-slate-800' },
+                  1: { label: 'Grid Available', color: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-900/20' }
+                }}
+              />
+              <StatusRow 
+                label="Load Status" 
+                value={telemetry?.statusLoad} 
+                mapping={{
+                  0: { label: 'No Load', color: 'text-slate-500', bg: 'bg-slate-50 dark:bg-slate-800' },
+                  1: { label: 'Active Load', color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-900/20' }
+                }}
+              />
+              <StatusRow 
+                label="Inverter Mode" 
+                value={telemetry?.statusInverter} 
+                mapping={{
+                  0: { label: 'Bypass', color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-900/20' },
+                  1: { label: 'Charging', color: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-900/20' },
+                  2: { label: 'Discharging', color: 'text-amber-500', bg: 'bg-amber-50 dark:bg-amber-900/20' }
+                }}
+              />
+            </div>
+          </div>
+
           <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
             <h3 className="font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
               <Sun className="w-5 h-5 text-amber-500" />
