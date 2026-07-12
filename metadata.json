@@ -1,0 +1,6 @@
+{
+  "name": "Solar Monitoring System",
+  "description": "Interactive solar energy application featuring real-time device monitoring, historical data analysis with Excel export, and alert management.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
