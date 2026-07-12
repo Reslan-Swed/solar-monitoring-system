@@ -206,19 +206,19 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ device, onBack }) => {
         <div className="flex items-center gap-4">
           <button 
             onClick={onBack}
-            className="p-2 bg-white border border-slate-200 rounded-xl text-slate-400 hover:text-slate-600 transition-all shadow-sm"
+            className="p-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-all shadow-sm"
             title="Back to Device Selection"
           >
             <ChevronLeft className="w-6 h-6" />
           </button>
           <div>
-            <h2 className="text-2xl font-bold text-slate-900">Historical Performance</h2>
-            <p className="text-slate-500">Analyze long-term yield and efficiency trends for {device.name}</p>
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Historical Performance</h2>
+            <p className="text-slate-500 dark:text-slate-400">Analyze long-term yield and efficiency trends for {device.name}</p>
           </div>
         </div>
         
         <div className="flex flex-wrap items-center gap-3">
-          <div className="flex bg-white border border-slate-200 rounded-lg p-1">
+          <div className="flex bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-1">
             {['24h', '7d', '30d', '1y', 'custom'].map((range) => (
               <button
                 key={range}
@@ -227,7 +227,7 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ device, onBack }) => {
                   setCurrentPage(1);
                 }}
                 className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all ${
-                  timeRange === range ? 'bg-slate-100 text-slate-900' : 'text-slate-500 hover:text-slate-700'
+                  timeRange === range ? 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
                 }`}
               >
                 {range.toUpperCase()}
@@ -236,30 +236,30 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ device, onBack }) => {
           </div>
 
           {timeRange === 'custom' && (
-            <div className="flex items-center gap-2 bg-white border border-slate-200 rounded-lg p-1 px-2">
+            <div className="flex items-center gap-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-1 px-2">
               <input 
                 type="date" 
                 value={customStartDate}
                 onChange={(e) => setCustomStartDate(e.target.value)}
-                className="text-xs font-bold text-slate-600 bg-transparent outline-none cursor-pointer"
+                className="text-xs font-bold text-slate-600 dark:text-slate-300 bg-transparent outline-none cursor-pointer"
               />
-              <span className="text-slate-300">-</span>
+              <span className="text-slate-300 dark:text-slate-600">-</span>
               <input 
                 type="date" 
                 value={customEndDate}
                 onChange={(e) => setCustomEndDate(e.target.value)}
-                className="text-xs font-bold text-slate-600 bg-transparent outline-none cursor-pointer"
+                className="text-xs font-bold text-slate-600 dark:text-slate-300 bg-transparent outline-none cursor-pointer"
               />
             </div>
           )}
 
-          <div className="flex items-center gap-2 p-1 bg-slate-50 rounded-lg border border-slate-200">
-            <div className="flex items-center gap-1 mr-2 px-2 border-r border-slate-200">
+          <div className="flex items-center gap-2 p-1 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-200 dark:border-slate-800">
+            <div className="flex items-center gap-1 mr-2 px-2 border-r border-slate-200 dark:border-slate-700">
               <button 
                 onClick={() => setDownloadType('day')}
                 className={cn(
                   "px-2 py-1 text-[10px] font-bold rounded transition-all",
-                  downloadType === 'day' ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-700"
+                  downloadType === 'day' ? "bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm" : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
                 )}
               >
                 DAY
@@ -268,7 +268,7 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ device, onBack }) => {
                 onClick={() => setDownloadType('month')}
                 className={cn(
                   "px-2 py-1 text-[10px] font-bold rounded transition-all",
-                  downloadType === 'month' ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-700"
+                  downloadType === 'month' ? "bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm" : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
                 )}
               >
                 MONTH
@@ -280,20 +280,20 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ device, onBack }) => {
                 type="date" 
                 value={exportDate}
                 onChange={(e) => setExportDate(e.target.value)}
-                className="text-xs font-bold text-slate-600 bg-transparent outline-none cursor-pointer pr-2"
+                className="text-xs font-bold text-slate-600 dark:text-slate-300 bg-transparent outline-none cursor-pointer pr-2"
               />
             ) : (
               <input 
                 type="month" 
                 value={exportMonth}
                 onChange={(e) => setExportMonth(e.target.value)}
-                className="text-xs font-bold text-slate-600 bg-transparent outline-none cursor-pointer pr-2"
+                className="text-xs font-bold text-slate-600 dark:text-slate-300 bg-transparent outline-none cursor-pointer pr-2"
               />
             )}
           </div>
           <button 
             onClick={handleDownload}
-            className="flex items-center gap-2 px-4 py-2 bg-emerald-500 text-white rounded-lg text-sm font-semibold hover:bg-emerald-600 transition-all shadow-md shadow-emerald-200"
+            className="flex items-center gap-2 px-4 py-2 bg-emerald-500 text-white rounded-lg text-sm font-semibold hover:bg-emerald-600 transition-all shadow-md shadow-emerald-200 dark:shadow-emerald-900/20"
           >
             <Download className="w-4 h-4" />
             Export
@@ -302,45 +302,45 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ device, onBack }) => {
       </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-100 p-4 rounded-xl flex items-center gap-3 text-red-600">
+        <div className="bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-900/30 p-4 rounded-xl flex items-center gap-3 text-red-600 dark:text-red-400">
           <AlertCircle className="w-5 h-5" />
           <p className="text-sm font-medium">{error}</p>
         </div>
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-3 bg-white p-6 rounded-2xl border border-slate-200 relative min-h-[450px]">
+        <div className="lg:col-span-3 bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 relative min-h-[450px]">
           {isTrendLoading && (
-            <div className="absolute inset-0 bg-white/50 backdrop-blur-[1px] z-10 flex items-center justify-center">
+            <div className="absolute inset-0 bg-white/50 dark:bg-slate-900/50 backdrop-blur-[1px] z-10 flex items-center justify-center">
               <Loader2 className="w-8 h-8 text-amber-500 animate-spin" />
             </div>
           )}
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h3 className="font-bold text-slate-900">24h Power Distribution Trend</h3>
-              <p className="text-sm text-slate-500">Hourly average power metrics across all sources</p>
+              <h3 className="font-bold text-slate-900 dark:text-white">24h Power Distribution Trend</h3>
+              <p className="text-sm text-slate-500 dark:text-slate-400">Hourly average power metrics across all sources</p>
             </div>
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-6 text-xs font-medium">
                 <div className="flex items-center gap-1.5">
                   <div className="w-3 h-3 rounded-full bg-amber-500" />
-                  <span className="text-slate-600">PV Power</span>
+                  <span className="text-slate-600 dark:text-slate-400">PV Power</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <div className="w-3 h-3 rounded-full bg-blue-500" />
-                  <span className="text-slate-600">Load</span>
+                  <span className="text-slate-600 dark:text-slate-400">Load</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <div className="w-3 h-3 rounded-full bg-emerald-500" />
-                  <span className="text-slate-600">Grid</span>
+                  <span className="text-slate-600 dark:text-slate-400">Grid</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <div className="w-3 h-3 rounded-full bg-purple-500" />
-                  <span className="text-slate-600">Batt Charge</span>
+                  <span className="text-slate-600 dark:text-slate-400">Batt Charge</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <div className="w-3 h-3 rounded-full bg-pink-500" />
-                  <span className="text-slate-600">Batt Discharge</span>
+                  <span className="text-slate-600 dark:text-slate-400">Batt Discharge</span>
                 </div>
               </div>
             </div>
@@ -359,7 +359,7 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ device, onBack }) => {
                     <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#334155" opacity={0.1} />
                 <XAxis 
                   dataKey="time" 
                   axisLine={false} 
@@ -374,11 +374,13 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ device, onBack }) => {
                 />
                 <Tooltip 
                   contentStyle={{ 
-                    backgroundColor: '#fff', 
+                    backgroundColor: '#1e293b', 
                     border: 'none', 
                     borderRadius: '12px', 
-                    boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' 
+                    boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)',
+                    color: '#f8fafc'
                   }}
+                  itemStyle={{ color: '#f8fafc' }}
                 />
                 <Area 
                   type="monotone" 
@@ -430,15 +432,15 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ device, onBack }) => {
           </div>
         </div>
 
-        <div className="lg:col-span-2 bg-white p-6 rounded-2xl border border-slate-200 relative min-h-[400px]">
+        <div className="lg:col-span-2 bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 relative min-h-[400px]">
           {isLoading && (
-            <div className="absolute inset-0 bg-white/50 backdrop-blur-[1px] z-10 flex items-center justify-center">
+            <div className="absolute inset-0 bg-white/50 dark:bg-slate-900/50 backdrop-blur-[1px] z-10 flex items-center justify-center">
               <Loader2 className="w-8 h-8 text-amber-500 animate-spin" />
             </div>
           )}
           <div className="flex items-center justify-between mb-8">
-            <h3 className="font-bold text-slate-900">Energy Production Trends (Watts)</h3>
-            <div className="flex items-center gap-2 text-slate-500 text-sm">
+            <h3 className="font-bold text-slate-900 dark:text-white">Energy Production Trends (Watts)</h3>
+            <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400 text-sm">
               <Calendar className="w-4 h-4" />
               {format(new Date(), 'MMMM yyyy')}
             </div>
@@ -447,7 +449,7 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ device, onBack }) => {
           <div className="h-[350px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={historyData}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#334155" opacity={0.1} />
                 <XAxis 
                   dataKey="createTime" 
                   axisLine={false} 
@@ -462,11 +464,13 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ device, onBack }) => {
                 />
                 <Tooltip 
                   contentStyle={{ 
-                    backgroundColor: '#fff', 
+                    backgroundColor: '#1e293b', 
                     border: 'none', 
                     borderRadius: '12px', 
-                    boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' 
+                    boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)',
+                    color: '#f8fafc'
                   }}
+                  itemStyle={{ color: '#f8fafc' }}
                 />
                 <Bar 
                   dataKey="acOutputActivePowerTotal" 
@@ -479,39 +483,39 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ device, onBack }) => {
           </div>
         </div>
 
-        <div className="bg-white border border-slate-200 rounded-2xl p-6">
-          <h3 className="font-bold text-slate-900 mb-6">Device Insights</h3>
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6">
+          <h3 className="font-bold text-slate-900 dark:text-white mb-6">Device Insights</h3>
           <div className="space-y-4">
-            <div className="p-4 bg-slate-50 rounded-xl">
-              <p className="text-xs font-bold text-slate-400 uppercase mb-1">Max Thermal Load</p>
+            <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl">
+              <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase mb-1">Max Thermal Load</p>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Thermometer className="w-4 h-4 text-orange-500" />
-                  <span className="text-lg font-black text-slate-900">
+                  <span className="text-lg font-black text-slate-900 dark:text-white">
                     {historyData.length > 0 ? Math.max(...historyData.map(d => parseFloat(d.maxTemperature))) : '0'}°C
                   </span>
                 </div>
               </div>
             </div>
             
-            <div className="p-4 bg-slate-50 rounded-xl">
-              <p className="text-xs font-bold text-slate-400 uppercase mb-1">Peak PV Input</p>
+            <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl">
+              <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase mb-1">Peak PV Input</p>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Sun className="w-4 h-4 text-amber-500" />
-                  <span className="text-lg font-black text-slate-900">
+                  <span className="text-lg font-black text-slate-900 dark:text-white">
                     {historyData.length > 0 ? Math.max(...historyData.map(d => parseFloat(d.pvInputPower1))) : '0'} W
                   </span>
                 </div>
               </div>
             </div>
 
-            <div className="p-4 bg-slate-50 rounded-xl">
-              <p className="text-xs font-bold text-slate-400 uppercase mb-1">Peak AC Output</p>
+            <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl">
+              <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase mb-1">Peak AC Output</p>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Zap className="w-4 h-4 text-blue-500" />
-                  <span className="text-lg font-black text-slate-900">
+                  <span className="text-lg font-black text-slate-900 dark:text-white">
                     {historyData.length > 0 ? Math.max(...historyData.map(d => d.acOutputActivePowerTotal)) : '0'} W
                   </span>
                 </div>
@@ -519,35 +523,35 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ device, onBack }) => {
             </div>
           </div>
 
-          <div className="mt-8 p-4 bg-slate-900 rounded-xl text-white">
-            <h4 className="text-xs uppercase font-bold text-slate-400 mb-4 tracking-wider">Operational Status</h4>
+          <div className="mt-8 p-4 bg-slate-900 dark:bg-slate-800 rounded-xl text-white">
+            <h4 className="text-xs uppercase font-bold text-slate-400 dark:text-slate-500 mb-4 tracking-wider">Operational Status</h4>
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm text-slate-300">System Stability</span>
               <span className="text-sm font-bold text-emerald-400">98.2%</span>
             </div>
-            <div className="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+            <div className="w-full bg-slate-800 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden">
               <div className="bg-emerald-500 h-full w-[98%] rounded-full"></div>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
-        <div className="p-6 border-b border-slate-100 flex items-center justify-between">
-          <h3 className="font-bold text-slate-900">Data Logs</h3>
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm">
+        <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+          <h3 className="font-bold text-slate-900 dark:text-white">Data Logs</h3>
           <div className="flex items-center gap-2">
             <button 
               disabled={currentPage === 1 || isLoading}
               onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-              className="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 disabled:opacity-50"
+              className="p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50 dark:text-slate-400"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
-            <span className="text-xs font-bold text-slate-500">Page {currentPage} of {totalPages}</span>
+            <span className="text-xs font-bold text-slate-500 dark:text-slate-400">Page {currentPage} of {totalPages}</span>
             <button 
               disabled={currentPage === totalPages || isLoading}
               onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-              className="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 disabled:opacity-50"
+              className="p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50 dark:text-slate-400"
             >
               <ChevronRight className="w-4 h-4" />
             </button>
@@ -556,71 +560,71 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ device, onBack }) => {
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead>
-              <tr className="bg-slate-50/50 border-b border-slate-100">
-                <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase whitespace-nowrap">Timestamp</th>
-                <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase whitespace-nowrap">Mode</th>
-                <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase whitespace-nowrap">PV Power (W)</th>
-                <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase whitespace-nowrap">PV Voltage (V)</th>
-                <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase whitespace-nowrap">Bat Capacity (%)</th>
-                <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase whitespace-nowrap">Bat Voltage (V)</th>
-                <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase whitespace-nowrap">Bat Dis. Pwr (W)</th>
-                <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase whitespace-nowrap">Dis. Cur (A)</th>
-                <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase whitespace-nowrap">Cha. Cur (A)</th>
-                <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase whitespace-nowrap">AC Act. Pwr (W)</th>
-                <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase whitespace-nowrap">AC App. Pwr (VA)</th>
-                <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase whitespace-nowrap">AC Vol (V)</th>
-                <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase whitespace-nowrap">AC Freq (Hz)</th>
-                <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase whitespace-nowrap">AC Load (%)</th>
-                <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase whitespace-nowrap">Grid Vol (V)</th>
-                <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase whitespace-nowrap">Grid Freq (Hz)</th>
-                <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase whitespace-nowrap">Grid Act. Pwr (W)</th>
-                <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase whitespace-nowrap">Gen Vol (V)</th>
-                <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase whitespace-nowrap">Gen Freq (Hz)</th>
-                <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase whitespace-nowrap">Out2 Vol (V)</th>
-                <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase whitespace-nowrap">Out2 Freq (Hz)</th>
-                <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase whitespace-nowrap">Max Temp (°C)</th>
-                <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase whitespace-nowrap">Inner Temp (°C)</th>
-                <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase whitespace-nowrap">Cur In 1 (A)</th>
-                <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase whitespace-nowrap">Fault</th>
+              <tr className="bg-slate-50/50 dark:bg-slate-800/50 border-b border-slate-100 dark:border-slate-800">
+                <th className="px-6 py-4 text-xs font-bold text-slate-400 dark:text-slate-500 uppercase whitespace-nowrap">Timestamp</th>
+                <th className="px-6 py-4 text-xs font-bold text-slate-400 dark:text-slate-500 uppercase whitespace-nowrap">Mode</th>
+                <th className="px-6 py-4 text-xs font-bold text-slate-400 dark:text-slate-500 uppercase whitespace-nowrap">PV Power (W)</th>
+                <th className="px-6 py-4 text-xs font-bold text-slate-400 dark:text-slate-500 uppercase whitespace-nowrap">PV Voltage (V)</th>
+                <th className="px-6 py-4 text-xs font-bold text-slate-400 dark:text-slate-500 uppercase whitespace-nowrap">Bat Capacity (%)</th>
+                <th className="px-6 py-4 text-xs font-bold text-slate-400 dark:text-slate-500 uppercase whitespace-nowrap">Bat Voltage (V)</th>
+                <th className="px-6 py-4 text-xs font-bold text-slate-400 dark:text-slate-500 uppercase whitespace-nowrap">Bat Dis. Pwr (W)</th>
+                <th className="px-6 py-4 text-xs font-bold text-slate-400 dark:text-slate-500 uppercase whitespace-nowrap">Dis. Cur (A)</th>
+                <th className="px-6 py-4 text-xs font-bold text-slate-400 dark:text-slate-500 uppercase whitespace-nowrap">Cha. Cur (A)</th>
+                <th className="px-6 py-4 text-xs font-bold text-slate-400 dark:text-slate-500 uppercase whitespace-nowrap">AC Act. Pwr (W)</th>
+                <th className="px-6 py-4 text-xs font-bold text-slate-400 dark:text-slate-500 uppercase whitespace-nowrap">AC App. Pwr (VA)</th>
+                <th className="px-6 py-4 text-xs font-bold text-slate-400 dark:text-slate-500 uppercase whitespace-nowrap">AC Vol (V)</th>
+                <th className="px-6 py-4 text-xs font-bold text-slate-400 dark:text-slate-500 uppercase whitespace-nowrap">AC Freq (Hz)</th>
+                <th className="px-6 py-4 text-xs font-bold text-slate-400 dark:text-slate-500 uppercase whitespace-nowrap">AC Load (%)</th>
+                <th className="px-6 py-4 text-xs font-bold text-slate-400 dark:text-slate-500 uppercase whitespace-nowrap">Grid Vol (V)</th>
+                <th className="px-6 py-4 text-xs font-bold text-slate-400 dark:text-slate-500 uppercase whitespace-nowrap">Grid Freq (Hz)</th>
+                <th className="px-6 py-4 text-xs font-bold text-slate-400 dark:text-slate-500 uppercase whitespace-nowrap">Grid Act. Pwr (W)</th>
+                <th className="px-6 py-4 text-xs font-bold text-slate-400 dark:text-slate-500 uppercase whitespace-nowrap">Gen Vol (V)</th>
+                <th className="px-6 py-4 text-xs font-bold text-slate-400 dark:text-slate-500 uppercase whitespace-nowrap">Gen Freq (Hz)</th>
+                <th className="px-6 py-4 text-xs font-bold text-slate-400 dark:text-slate-500 uppercase whitespace-nowrap">Out2 Vol (V)</th>
+                <th className="px-6 py-4 text-xs font-bold text-slate-400 dark:text-slate-500 uppercase whitespace-nowrap">Out2 Freq (Hz)</th>
+                <th className="px-6 py-4 text-xs font-bold text-slate-400 dark:text-slate-500 uppercase whitespace-nowrap">Max Temp (°C)</th>
+                <th className="px-6 py-4 text-xs font-bold text-slate-400 dark:text-slate-500 uppercase whitespace-nowrap">Inner Temp (°C)</th>
+                <th className="px-6 py-4 text-xs font-bold text-slate-400 dark:text-slate-500 uppercase whitespace-nowrap">Cur In 1 (A)</th>
+                <th className="px-6 py-4 text-xs font-bold text-slate-400 dark:text-slate-500 uppercase whitespace-nowrap">Fault</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-50">
+            <tbody className="divide-y divide-slate-50 dark:divide-slate-800/50">
               {historyData.map((log, i) => (
-                <tr key={log.id} className="hover:bg-slate-50/50 transition-colors">
-                  <td className="px-6 py-4 text-sm text-slate-600 font-medium whitespace-nowrap">
+                <tr key={log.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
+                  <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400 font-medium whitespace-nowrap">
                     {log.createTime}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="px-2 py-1 bg-blue-50 text-blue-600 rounded text-[10px] font-bold">
+                    <span className="px-2 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded text-[10px] font-bold">
                       {getWorkModeLabel(log.workMode)}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-sm text-slate-900 font-bold whitespace-nowrap">{log.pvInputPower1}</td>
-                  <td className="px-6 py-4 text-sm text-slate-600 whitespace-nowrap">{log.pvInputVoltage1}</td>
-                  <td className="px-6 py-4 text-sm text-slate-600 whitespace-nowrap">{log.batteryCapacity}%</td>
-                  <td className="px-6 py-4 text-sm text-slate-600 whitespace-nowrap">{log.batteryVoltage}</td>
-                  <td className="px-6 py-4 text-sm text-slate-600 whitespace-nowrap">{log.batteryDischargingPower}</td>
-                  <td className="px-6 py-4 text-sm text-slate-600 whitespace-nowrap">{log.dischargingCurrent}</td>
-                  <td className="px-6 py-4 text-sm text-slate-600 whitespace-nowrap">{log.chargingCurrent}</td>
-                  <td className="px-6 py-4 text-sm text-slate-900 font-bold whitespace-nowrap">{log.acOutputActivePowerTotal}</td>
-                  <td className="px-6 py-4 text-sm text-slate-600 whitespace-nowrap">{log.acOutputApparentPowerTotal}</td>
-                  <td className="px-6 py-4 text-sm text-slate-600 whitespace-nowrap">{log.acOutputVoltageR}</td>
-                  <td className="px-6 py-4 text-sm text-slate-600 whitespace-nowrap">{log.acOutputFrequency}</td>
-                  <td className="px-6 py-4 text-sm text-slate-600 whitespace-nowrap">{log.acOutputLoadTotal}%</td>
-                  <td className="px-6 py-4 text-sm text-slate-600 whitespace-nowrap">{log.gridVoltageR}</td>
-                  <td className="px-6 py-4 text-sm text-slate-600 whitespace-nowrap">{log.gridFrequency}</td>
-                  <td className="px-6 py-4 text-sm text-slate-600 whitespace-nowrap">{log.gridPowerInputActiveTotal}</td>
-                  <td className="px-6 py-4 text-sm text-slate-600 whitespace-nowrap">{log.generatorInputVoltage}</td>
-                  <td className="px-6 py-4 text-sm text-slate-600 whitespace-nowrap">{log.generatorInputFrequency}</td>
-                  <td className="px-6 py-4 text-sm text-slate-600 whitespace-nowrap">{log.output2Voltage}</td>
-                  <td className="px-6 py-4 text-sm text-slate-600 whitespace-nowrap">{log.output2Frequency}</td>
-                  <td className="px-6 py-4 text-sm text-slate-600 whitespace-nowrap">{log.maxTemperature}</td>
-                  <td className="px-6 py-4 text-sm text-slate-600 whitespace-nowrap">{log.innerTemperature}</td>
-                  <td className="px-6 py-4 text-sm text-slate-600 whitespace-nowrap">{log.currentInput1}</td>
+                  <td className="px-6 py-4 text-sm text-slate-900 dark:text-white font-bold whitespace-nowrap">{log.pvInputPower1}</td>
+                  <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400 whitespace-nowrap">{log.pvInputVoltage1}</td>
+                  <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400 whitespace-nowrap">{log.batteryCapacity}%</td>
+                  <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400 whitespace-nowrap">{log.batteryVoltage}</td>
+                  <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400 whitespace-nowrap">{log.batteryDischargingPower}</td>
+                  <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400 whitespace-nowrap">{log.dischargingCurrent}</td>
+                  <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400 whitespace-nowrap">{log.chargingCurrent}</td>
+                  <td className="px-6 py-4 text-sm text-slate-900 dark:text-white font-bold whitespace-nowrap">{log.acOutputActivePowerTotal}</td>
+                  <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400 whitespace-nowrap">{log.acOutputApparentPowerTotal}</td>
+                  <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400 whitespace-nowrap">{log.acOutputVoltageR}</td>
+                  <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400 whitespace-nowrap">{log.acOutputFrequency}</td>
+                  <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400 whitespace-nowrap">{log.acOutputLoadTotal}%</td>
+                  <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400 whitespace-nowrap">{log.gridVoltageR}</td>
+                  <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400 whitespace-nowrap">{log.gridFrequency}</td>
+                  <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400 whitespace-nowrap">{log.gridPowerInputActiveTotal}</td>
+                  <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400 whitespace-nowrap">{log.generatorInputVoltage}</td>
+                  <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400 whitespace-nowrap">{log.generatorInputFrequency}</td>
+                  <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400 whitespace-nowrap">{log.output2Voltage}</td>
+                  <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400 whitespace-nowrap">{log.output2Frequency}</td>
+                  <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400 whitespace-nowrap">{log.maxTemperature}</td>
+                  <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400 whitespace-nowrap">{log.innerTemperature}</td>
+                  <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400 whitespace-nowrap">{log.currentInput1}</td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={cn(
                       "px-2 py-1 rounded text-[10px] font-bold",
-                      log.fault1 === '0' ? "bg-emerald-50 text-emerald-600" : "bg-red-50 text-red-600"
+                      log.fault1 === '0' ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-500" : "bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400"
                     )}>
                       {log.fault1 === '0' ? 'NORMAL' : `FAULT ${log.fault1}`}
                     </span>
@@ -629,7 +633,7 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ device, onBack }) => {
               ))}
               {historyData.length === 0 && !isLoading && (
                 <tr>
-                  <td colSpan={25} className="px-6 py-12 text-center text-slate-400">
+                  <td colSpan={25} className="px-6 py-12 text-center text-slate-400 dark:text-slate-600">
                     No records found for the selected period
                   </td>
                 </tr>

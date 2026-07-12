@@ -95,9 +95,9 @@ export const DeviceRateModal: React.FC<DeviceRateModalProps> = ({ device, onClos
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 20 }}
-        className="relative bg-white w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden"
+        className="relative bg-white dark:bg-slate-900 w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden border border-transparent dark:border-slate-800"
       >
-        <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+        <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-900/50">
           <div className="flex-grow">
             {isEditingName ? (
               <div className="flex items-center gap-2 max-w-md">
@@ -106,7 +106,7 @@ export const DeviceRateModal: React.FC<DeviceRateModalProps> = ({ device, onClos
                   autoFocus
                   value={newName}
                   onChange={(e) => setNewName(e.target.value)}
-                  className="px-3 py-1 bg-white border border-slate-200 rounded-lg text-lg font-bold outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all w-full"
+                  className="px-3 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-lg font-bold outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 dark:text-white transition-all w-full"
                 />
                 <button 
                   onClick={handleRename}
@@ -117,18 +117,18 @@ export const DeviceRateModal: React.FC<DeviceRateModalProps> = ({ device, onClos
                 </button>
                 <button 
                   onClick={() => { setIsEditingName(false); setNewName(device.name); }}
-                  className="p-2 bg-slate-100 text-slate-500 rounded-lg hover:bg-slate-200 transition-colors"
+                  className="p-2 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
                 >
                   <X className="w-4 h-4" />
                 </button>
               </div>
             ) : (
               <div className="flex items-center gap-3">
-                <h2 className="text-xl font-bold text-slate-900">{device.name}</h2>
+                <h2 className="text-xl font-bold text-slate-900 dark:text-white">{device.name}</h2>
                 <div className="flex items-center gap-1">
                   <button 
                     onClick={() => setIsEditingName(true)}
-                    className="p-1.5 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-all"
+                    className="p-1.5 text-slate-400 dark:text-slate-500 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded-lg transition-all"
                     title="Edit Nickname"
                   >
                     <Edit2 className="w-4 h-4" />
@@ -139,8 +139,8 @@ export const DeviceRateModal: React.FC<DeviceRateModalProps> = ({ device, onClos
                     className={cn(
                       "flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all text-sm font-bold",
                       confirmDelete 
-                        ? "bg-red-500 text-white hover:bg-red-600 shadow-lg shadow-red-200 animate-pulse" 
-                        : "text-slate-400 hover:text-red-600 hover:bg-red-50"
+                        ? "bg-red-500 text-white hover:bg-red-600 shadow-lg shadow-red-200 dark:shadow-red-900/20 animate-pulse" 
+                        : "text-slate-400 dark:text-slate-500 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
                     )}
                     title={confirmDelete ? "Click again to confirm" : "Delete Device"}
                   >
@@ -158,11 +158,11 @@ export const DeviceRateModal: React.FC<DeviceRateModalProps> = ({ device, onClos
                 </div>
               </div>
             )}
-            <p className="text-sm text-slate-500 font-mono mt-1">SN: {device.deviceSn}</p>
+            <p className="text-sm text-slate-500 dark:text-slate-400 font-mono mt-1">SN: {device.deviceSn}</p>
           </div>
           <button 
             onClick={onClose}
-            className="p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-400 hover:text-slate-600 self-start"
+            className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 self-start"
           >
             <X className="w-5 h-5" />
           </button>
@@ -172,19 +172,19 @@ export const DeviceRateModal: React.FC<DeviceRateModalProps> = ({ device, onClos
           {loading ? (
             <div className="py-20 flex flex-col items-center justify-center gap-4">
               <div className="w-10 h-10 border-4 border-amber-500 border-t-transparent rounded-full animate-spin"></div>
-              <p className="text-slate-500 font-medium">Retrieving Rating Data...</p>
+              <p className="text-slate-500 dark:text-slate-400 font-medium">Retrieving Rating Data...</p>
             </div>
           ) : error ? (
             <div className="py-20 text-center">
               <Info className="w-12 h-12 text-red-400 mx-auto mb-4" />
-              <p className="text-slate-900 font-bold">{error}</p>
-              <button onClick={onClose} className="mt-4 px-6 py-2 bg-slate-100 rounded-lg font-bold">Close</button>
+              <p className="text-slate-900 dark:text-white font-bold">{error}</p>
+              <button onClick={onClose} className="mt-4 px-6 py-2 bg-slate-100 dark:bg-slate-800 dark:text-white rounded-lg font-bold">Close</button>
             </div>
           ) : data && (
             <div className="space-y-8">
               {/* Product Info */}
               <section>
-                <div className="flex items-center gap-2 mb-4 text-amber-600">
+                <div className="flex items-center gap-2 mb-4 text-amber-600 dark:text-amber-500">
                   <ShieldCheck className="w-5 h-5" />
                   <h3 className="font-bold uppercase tracking-wider text-xs">Product Information</h3>
                 </div>
@@ -198,7 +198,7 @@ export const DeviceRateModal: React.FC<DeviceRateModalProps> = ({ device, onClos
 
               {/* Rating Information */}
               <section>
-                <div className="flex items-center gap-2 mb-4 text-indigo-600">
+                <div className="flex items-center gap-2 mb-4 text-indigo-600 dark:text-indigo-400">
                   <Zap className="w-5 h-5" />
                   <h3 className="font-bold uppercase tracking-wider text-xs">Rating Information</h3>
                 </div>
@@ -214,7 +214,7 @@ export const DeviceRateModal: React.FC<DeviceRateModalProps> = ({ device, onClos
 
               {/* Operational Defaults */}
               <section>
-                <div className="flex items-center gap-2 mb-4 text-emerald-600">
+                <div className="flex items-center gap-2 mb-4 text-emerald-600 dark:text-emerald-500">
                   <Activity className="w-5 h-5" />
                   <h3 className="font-bold uppercase tracking-wider text-xs">Operational Parameters</h3>
                 </div>
@@ -226,7 +226,7 @@ export const DeviceRateModal: React.FC<DeviceRateModalProps> = ({ device, onClos
                 </div>
               </section>
               
-              <div className="pt-6 border-t border-slate-50 flex items-center justify-between text-slate-400 text-[10px] font-bold uppercase tracking-widest">
+              <div className="pt-6 border-t border-slate-50 dark:border-slate-800 flex items-center justify-between text-slate-400 dark:text-slate-500 text-[10px] font-bold uppercase tracking-widest">
                 <div className="flex items-center gap-1">
                   <Globe className="w-3 h-3" />
                   Nation: {data.nation}
@@ -242,20 +242,21 @@ export const DeviceRateModal: React.FC<DeviceRateModalProps> = ({ device, onClos
 };
 
 const InfoItem = ({ label, value, icon, valueClassName }: { label: string, value: any, icon?: React.ReactNode, valueClassName?: string }) => (
-  <div className="flex items-center justify-between p-3 bg-slate-50 rounded-xl">
+  <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl">
     <div className="flex items-center gap-2">
-      {icon && <span className="text-slate-400">{icon}</span>}
-      <span className="text-xs font-bold text-slate-500 uppercase tracking-tight">{label}</span>
+      {icon && <span className="text-slate-400 dark:text-slate-500">{icon}</span>}
+      <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-tight">{label}</span>
     </div>
-    <span className={cn("font-bold text-slate-900 text-sm", valueClassName)}>{value}</span>
+    <span className={cn("font-bold text-slate-900 dark:text-white text-sm", valueClassName)}>{value}</span>
   </div>
 );
 
 const StatItem = ({ label, value, unit }: { label: string, value: any, unit: string }) => (
-  <div className="p-4 bg-white border border-slate-100 rounded-2xl shadow-sm">
-    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">{label}</p>
-    <p className="text-xl font-black text-slate-900">
-      {value} <span className="text-xs font-bold text-slate-400">{unit}</span>
+  <div className="p-4 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl shadow-sm">
+    <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">{label}</p>
+    <p className="text-xl font-black text-slate-900 dark:text-white">
+      {value} <span className="text-xs font-bold text-slate-400 dark:text-slate-500">{unit}</span>
     </p>
   </div>
 );
+

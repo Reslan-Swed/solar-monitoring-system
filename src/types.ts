@@ -41,9 +41,12 @@ export type Alert = {
   isRead: boolean;
 };
 
+export type Theme = 'light' | 'dark';
+
 export type DeviceSettings = {
   updateFrequency: number;
   efficiencyThreshold: number;
   notificationEnabled: boolean;
   alertOnOffline: boolean;
+  theme: Theme;
 };

@@ -132,26 +132,26 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLogin, onRegisterClick, 
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 p-4 transition-colors duration-300">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md bg-white rounded-3xl shadow-2xl shadow-slate-200 p-8 border border-slate-100"
+        className="w-full max-w-md bg-white dark:bg-slate-900 rounded-3xl shadow-2xl shadow-slate-200 dark:shadow-none p-8 border border-slate-100 dark:border-slate-800"
       >
         <div className="flex flex-col items-center mb-8">
           <div className="w-20 h-20 bg-amber-500/10 rounded-2xl flex items-center justify-center mb-4 transform rotate-3">
             <Sun className="w-12 h-12 text-amber-500" />
           </div>
-          <h1 className="text-3xl font-black text-slate-900 tracking-tight">SolarMonitor</h1>
-          <p className="text-slate-400 font-medium mt-1">Energy Intelligence Dashboard</p>
+          <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">SolarMonitor</h1>
+          <p className="text-slate-400 dark:text-slate-500 font-medium mt-1">Energy Intelligence Dashboard</p>
         </div>
 
-        <div className="flex p-1 bg-slate-100 rounded-xl mb-8">
+        <div className="flex p-1 bg-slate-100 dark:bg-slate-800 rounded-xl mb-8">
           <button
             onClick={() => { setMethod('password'); setError(null); }}
             className={cn(
               "flex-1 py-2 text-sm font-bold rounded-lg transition-all duration-200",
-              method === 'password' ? "bg-white text-amber-600 shadow-sm" : "text-slate-500 hover:text-slate-700"
+              method === 'password' ? "bg-white dark:bg-slate-700 text-amber-600 dark:text-amber-400 shadow-sm" : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
             )}
           >
             Password
@@ -160,7 +160,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLogin, onRegisterClick, 
             onClick={() => { setMethod('email'); setError(null); }}
             className={cn(
               "flex-1 py-2 text-sm font-bold rounded-lg transition-all duration-200",
-              method === 'email' ? "bg-white text-amber-600 shadow-sm" : "text-slate-500 hover:text-slate-700"
+              method === 'email' ? "bg-white dark:bg-slate-700 text-amber-600 dark:text-amber-400 shadow-sm" : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
             )}
           >
             Email Login
@@ -171,7 +171,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLogin, onRegisterClick, 
           <motion.div 
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
-            className="mb-6 bg-red-50 border border-red-100 text-red-600 px-4 py-3 rounded-xl text-sm font-medium flex items-center gap-2 overflow-hidden"
+            className="mb-6 bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-900/30 text-red-600 dark:text-red-400 px-4 py-3 rounded-xl text-sm font-medium flex items-center gap-2 overflow-hidden"
           >
             <AlertCircle className="w-4 h-4 shrink-0" />
             {error}
@@ -189,40 +189,40 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLogin, onRegisterClick, 
               className="space-y-6"
             >
               <div>
-                <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">
+                <label className="block text-xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2">
                   Username
                 </label>
                 <div className="relative">
-                  <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300" />
+                  <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300 dark:text-slate-600" />
                   <input
                     type="text"
                     required
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     placeholder="john_doe"
-                    className="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 transition-all outline-none font-medium"
+                    className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 transition-all outline-none font-medium dark:text-white"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">
+                <label className="block text-xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2">
                   Password
                 </label>
                 <div className="relative">
-                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300" />
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300 dark:text-slate-600" />
                   <input
                     type={showPassword ? 'text' : 'password'}
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="w-full pl-12 pr-12 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 transition-all outline-none font-medium"
+                    className="w-full pl-12 pr-12 py-3.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 transition-all outline-none font-medium dark:text-white"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
                   >
                     {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                   </button>
@@ -235,14 +235,14 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLogin, onRegisterClick, 
                     type="checkbox" 
                     checked={rememberMe}
                     onChange={(e) => setRememberMe(e.target.checked)}
-                    className="rounded-md border-slate-300 text-amber-500 focus:ring-amber-500/20 w-4 h-4" 
+                    className="rounded-md border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-amber-500 focus:ring-amber-500/20 w-4 h-4" 
                   />
-                  <span className="text-sm font-bold text-slate-500 group-hover:text-amber-600 transition-colors">Remember me</span>
+                  <span className="text-sm font-bold text-slate-500 dark:text-slate-400 group-hover:text-amber-600 dark:group-hover:text-amber-500 transition-colors">Remember me</span>
                 </label>
                 <button 
                   type="button" 
                   onClick={onForgotPasswordClick}
-                  className="text-xs font-bold text-slate-500 hover:text-amber-600 transition-colors"
+                  className="text-xs font-bold text-slate-500 dark:text-slate-400 hover:text-amber-600 dark:hover:text-amber-500 transition-colors"
                 >
                   Forgot password?
                 </button>
@@ -252,7 +252,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLogin, onRegisterClick, 
                 type="submit"
                 disabled={isLoading}
                 className={cn(
-                  "w-full py-4 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-2xl shadow-xl shadow-amber-200 transition-all flex items-center justify-center gap-2",
+                  "w-full py-4 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-2xl shadow-xl shadow-amber-200 dark:shadow-none transition-all flex items-center justify-center gap-2",
                   isLoading && "opacity-80 cursor-not-allowed shadow-none"
                 )}
               >
@@ -282,18 +282,18 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLogin, onRegisterClick, 
                     className="space-y-6"
                   >
                     <div>
-                      <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">
+                      <label className="block text-xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2">
                         Registered Email
                       </label>
                       <div className="relative">
-                        <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300" />
+                        <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300 dark:text-slate-600" />
                         <input
                           type="email"
                           required
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
                           placeholder="your@email.com"
-                          className="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 transition-all outline-none font-medium"
+                          className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 transition-all outline-none font-medium dark:text-white"
                         />
                       </div>
                     </div>
@@ -302,7 +302,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLogin, onRegisterClick, 
                       type="submit"
                       disabled={isLoading}
                       className={cn(
-                        "w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-2xl shadow-xl shadow-indigo-100 transition-all flex items-center justify-center gap-2",
+                        "w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-2xl shadow-xl shadow-indigo-100 dark:shadow-none transition-all flex items-center justify-center gap-2",
                         isLoading && "opacity-80 cursor-not-allowed shadow-none"
                       )}
                     >
@@ -322,14 +322,14 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLogin, onRegisterClick, 
                     onSubmit={handleVerifyAndLogin}
                     className="space-y-6"
                   >
-                    <div className="p-4 bg-blue-50 border border-blue-100 rounded-xl">
-                      <p className="text-sm text-blue-700 font-medium">
+                    <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-900/30 rounded-xl">
+                      <p className="text-sm text-blue-700 dark:text-blue-400 font-medium">
                         Code sent to: <span className="font-bold">{email}</span>
                       </p>
                       <button 
                         type="button"
                         onClick={() => setEmailStep('email')}
-                        className="text-xs font-bold text-blue-600 mt-1 hover:underline"
+                        className="text-xs font-bold text-blue-600 dark:text-blue-500 mt-1 hover:underline"
                       >
                         Change Email
                       </button>
@@ -337,7 +337,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLogin, onRegisterClick, 
 
                     <div>
                       <div className="flex items-center justify-between mb-2">
-                        <label className="block text-xs font-black text-slate-400 uppercase tracking-widest">
+                        <label className="block text-xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">
                           Verification Code
                         </label>
                         <button
@@ -347,8 +347,8 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLogin, onRegisterClick, 
                           className={cn(
                             "text-xs font-bold transition-colors flex items-center gap-1",
                             countdown > 0 
-                              ? "text-slate-400 cursor-not-allowed" 
-                              : "text-amber-600 hover:text-amber-700"
+                              ? "text-slate-400 dark:text-slate-500 cursor-not-allowed" 
+                              : "text-amber-600 dark:text-amber-500 hover:text-amber-700"
                           )}
                         >
                           {countdown > 0 ? (
@@ -362,14 +362,14 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLogin, onRegisterClick, 
                         </button>
                       </div>
                       <div className="relative">
-                        <Key className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300" />
+                        <Key className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-300 dark:text-slate-600" />
                         <input
                           type="text"
                           required
                           value={otp}
                           onChange={(e) => setOtp(e.target.value)}
                           placeholder="Enter 6-digit code"
-                          className="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 transition-all outline-none font-bold tracking-widest text-center"
+                          className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 transition-all outline-none font-bold tracking-widest text-center dark:text-white"
                         />
                       </div>
                     </div>
@@ -378,7 +378,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLogin, onRegisterClick, 
                       type="submit"
                       disabled={isLoading}
                       className={cn(
-                        "w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-2xl shadow-xl shadow-emerald-100 transition-all flex items-center justify-center gap-2",
+                        "w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-2xl shadow-xl shadow-emerald-100 dark:shadow-none transition-all flex items-center justify-center gap-2",
                         isLoading && "opacity-80 cursor-not-allowed shadow-none"
                       )}
                     >
@@ -395,11 +395,11 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLogin, onRegisterClick, 
           )}
         </AnimatePresence>
 
-        <p className="mt-10 text-center text-sm text-slate-400 font-medium">
+        <p className="mt-10 text-center text-sm text-slate-400 dark:text-slate-500 font-medium">
           Don't have an account?{' '}
           <button 
             onClick={onRegisterClick}
-            className="font-bold text-amber-600 hover:text-amber-700"
+            className="font-bold text-amber-600 dark:text-amber-500 hover:text-amber-700 dark:hover:text-amber-400"
           >
             Create Account
           </button>

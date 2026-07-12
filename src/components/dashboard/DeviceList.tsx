@@ -35,8 +35,8 @@ export const DeviceList: React.FC<DeviceListProps> = ({
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-slate-900">{title || "Connected Assets"}</h2>
-          <p className="text-slate-500">{subtitle || `Monitoring ${devices.length} devices across your infrastructure`}</p>
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-white transition-colors">{title || "Connected Assets"}</h2>
+          <p className="text-slate-500 dark:text-slate-400 transition-colors">{subtitle || `Monitoring ${devices.length} devices across your infrastructure`}</p>
         </div>
         
         <div className="flex items-center gap-3">
@@ -44,14 +44,14 @@ export const DeviceList: React.FC<DeviceListProps> = ({
             <button 
               onClick={onRefresh}
               disabled={isRefreshing}
-              className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-all disabled:opacity-50"
+              className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all disabled:opacity-50"
               title="Refresh device status"
             >
               <RefreshCw className={cn("w-4 h-4", isRefreshing && "animate-spin")} />
               {isRefreshing ? 'Refreshing...' : 'Refresh'}
             </button>
           )}
-          <button className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-all">
+          <button className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all">
             <Filter className="w-4 h-4" />
             Filter
           </button>

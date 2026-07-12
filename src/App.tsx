@@ -52,6 +52,7 @@ const MOCK_SETTINGS: DeviceSettings = {
   efficiencyThreshold: 85,
   notificationEnabled: true,
   alertOnOffline: true,
+  theme: 'light',
 };
 
 const mapApiDeviceToDevice = (item: DeviceListItem): Device => {
@@ -98,17 +99,70 @@ export default function App() {
   const [isAddingDevice, setIsAddingDevice] = useState(false);
   const [alerts, setAlerts] = useState<Alert[]>(MOCK_ALERTS);
   const [latestAlert, setLatestAlert] = useState<EventLogItem | null>(null);
-  const [settings, setSettings] = useState<DeviceSettings>(MOCK_SETTINGS);
+  const [settings, setSettings] = useState<DeviceSettings>(() => {
+    try {
+      const saved = localStorage.getItem('appSettings');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return { ...MOCK_SETTINGS, ...parsed };
+      }
+    } catch (e) {
+      console.error('Failed to load settings', e);
+    }
+    return { ...MOCK_SETTINGS };
+  });
+
+  useEffect(() => {
+    const root = document.documentElement;
+    if (settings.theme === 'dark') {
+      root.classList.add('dark');
+    } else {
+      root.classList.remove('dark');
+    }
+  }, [settings.theme]);
+
+  // Load settings from localStorage whenever the user state changes (e.g., after login)
+  useEffect(() => {
+    if (user) {
+      try {
+        const saved = localStorage.getItem('appSettings');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          setSettings({ ...MOCK_SETTINGS, ...parsed });
+        }
+      } catch (e) {
+        console.error('Failed to load settings on login', e);
+      }
+    }
+  }, [user]);
+
+  const handleUpdateSettings = (newSettings: DeviceSettings) => {
+    setSettings(newSettings);
+    localStorage.setItem('appSettings', JSON.stringify(newSettings));
+  };
+
+  const handlePreviewTheme = (theme: 'light' | 'dark') => {
+    setSettings(prev => ({ ...prev, theme }));
+    
+    // Actually apply the theme class immediately for the preview
+    const root = document.documentElement;
+    if (theme === 'dark') {
+      root.classList.add('dark');
+    } else {
+      root.classList.remove('dark');
+    }
+  };
+
   const [isLoading, setIsLoading] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  
+
   const fetchDevices = async (isBackground = false) => {
     if (isBackground) {
       setIsRefreshing(true);
     } else {
       setIsLoading(true);
     }
-    
+
     try {
       const response = await api.getDevices();
       const mapped = response.list.map(mapApiDeviceToDevice);
@@ -152,7 +206,7 @@ export default function App() {
   useEffect(() => {
     if (!user) return;
     fetchDevices();
-    
+
     // Periodically refresh devices every 1 minute to track online/offline status
     const interval = setInterval(() => fetchDevices(true), 60000);
     return () => clearInterval(interval);
@@ -178,7 +232,7 @@ export default function App() {
         const activeAlerts = response.list.filter(a => !a.extinctionTime);
         if (activeAlerts.length > 0) {
           // Sort by occurrenceTime descending just in case
-          const sorted = activeAlerts.sort((a, b) => 
+          const sorted = activeAlerts.sort((a, b) =>
             new Date(b.occurrenceTime).getTime() - new Date(a.occurrenceTime).getTime()
           );
           setLatestAlert(sorted[0]);
@@ -228,151 +282,152 @@ export default function App() {
   if (!user) {
     if (isRegistering) {
       return (
-        <RegisterForm 
-          onBackToLogin={() => setIsRegistering(false)} 
-          onSuccess={() => setIsRegistering(false)} 
+        <RegisterForm
+          onBackToLogin={() => setIsRegistering(false)}
+          onSuccess={() => setIsRegistering(false)}
         />
       );
     }
     if (isForgotPassword) {
       return (
-        <ForgotPasswordForm 
-          onBackToLogin={() => setIsForgotPassword(false)} 
+        <ForgotPasswordForm
+          onBackToLogin={() => setIsForgotPassword(false)}
         />
       );
     }
     return (
-      <LoginForm 
-        onLogin={handleLogin} 
-        onRegisterClick={() => setIsRegistering(true)} 
+      <LoginForm
+        onLogin={handleLogin}
+        onRegisterClick={() => setIsRegistering(true)}
         onForgotPasswordClick={() => setIsForgotPassword(true)}
       />
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <Sidebar 
-        activeTab={activeTab} 
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
+      <Sidebar
+        activeTab={activeTab}
         setActiveTab={(tab) => {
           setActiveTab(tab);
           setSelectedDevice(null);
           setHistoryDevice(null);
-        }} 
-        onLogout={handleLogout} 
+        }}
+        onLogout={handleLogout}
       />
-      
+
       <div className="pl-64 flex flex-col min-h-screen">
         <Navbar user={user} title={currentTitle} latestAlert={latestAlert} />
-        
+
         <main className="flex-1 pt-24 pb-0 px-8 max-w-[1600px] mx-auto w-full flex flex-col">
           <div className="flex-1 pb-12">
             {isLoading && (
-            <div className="fixed inset-0 bg-white/50 backdrop-blur-sm z-50 flex items-center justify-center">
-              <div className="flex flex-col items-center gap-3">
-                <div className="w-12 h-12 border-4 border-amber-500 border-t-transparent rounded-full animate-spin"></div>
-                <p className="text-amber-900 font-bold">Synchronizing Assets...</p>
+              <div className="fixed inset-0 bg-white/50 dark:bg-slate-950/50 backdrop-blur-sm z-50 flex items-center justify-center transition-colors">
+                <div className="flex flex-col items-center gap-3">
+                  <div className="w-12 h-12 border-4 border-amber-500 border-t-transparent rounded-full animate-spin"></div>
+                  <p className="text-amber-900 dark:text-amber-200 font-bold">Synchronizing Assets...</p>
+                </div>
               </div>
-            </div>
-          )}
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={selectedDevice?.id || activeTab}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.2 }}
-            >
-              {selectedDevice ? (
-                <RealTimeMonitor 
-                  device={selectedDevice} 
-                  onBack={() => setSelectedDevice(null)} 
-                />
-              ) : (
-                <>
-                  {activeTab === 'dashboard' && (
-                    <>
-                      <DeviceList 
-                        devices={devices} 
-                        onSelectDevice={setRateDevice} 
-                        onDeleteDevice={handleDeleteDevice}
-                        onRenameDevice={handleRenameDevice}
-                        onAddDevice={() => setIsAddingDevice(true)}
-                        onRefresh={() => fetchDevices(true)}
-                        isRefreshing={isRefreshing}
-                      />
-                      <AnimatePresence>
-                        {rateDevice && (
-                          <DeviceRateModal 
-                            device={rateDevice} 
-                            onClose={() => setRateDevice(null)}
-                            onDelete={handleDeleteDevice}
-                            onRename={(sn, name) => {
-                              fetchDevices();
-                              setRateDevice(null);
-                            }}
-                          />
-                        )}
-                        {isAddingDevice && (
-                          <AddDeviceModal 
-                            onClose={() => setIsAddingDevice(false)} 
-                            onSuccess={fetchDevices}
-                          />
-                        )}
-                      </AnimatePresence>
-                    </>
-                  )}
-                  {activeTab === 'monitoring' && (
-                    <DeviceList 
-                      devices={devices} 
-                      onSelectDevice={setSelectedDevice} 
-                      onDeleteDevice={handleDeleteDevice}
-                      onRenameDevice={handleRenameDevice}
-                      onRefresh={() => fetchDevices(true)}
-                      isRefreshing={isRefreshing}
-                      title="Select Asset to Monitor"
-                      subtitle="Choose a device to view real-time telemetry and diagnostics"
-                      showMonitoringInfo={true}
-                    />
-                  )}
-                  {activeTab === 'history' && (
-                    historyDevice ? (
-                      <HistoryView 
-                        device={historyDevice} 
-                        onBack={() => setHistoryDevice(null)}
-                      />
-                    ) : (
-                      <DeviceList 
-                        devices={devices} 
-                        onSelectDevice={setHistoryDevice} 
+            )}
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={selectedDevice?.id || activeTab}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.2 }}
+              >
+                {selectedDevice ? (
+                  <RealTimeMonitor
+                    device={selectedDevice}
+                    onBack={() => setSelectedDevice(null)}
+                  />
+                ) : (
+                  <>
+                    {activeTab === 'dashboard' && (
+                      <>
+                        <DeviceList
+                          devices={devices}
+                          onSelectDevice={setRateDevice}
+                          onDeleteDevice={handleDeleteDevice}
+                          onRenameDevice={handleRenameDevice}
+                          onAddDevice={() => setIsAddingDevice(true)}
+                          onRefresh={() => fetchDevices(true)}
+                          isRefreshing={isRefreshing}
+                        />
+                        <AnimatePresence>
+                          {rateDevice && (
+                            <DeviceRateModal
+                              device={rateDevice}
+                              onClose={() => setRateDevice(null)}
+                              onDelete={handleDeleteDevice}
+                              onRename={(sn, name) => {
+                                fetchDevices();
+                                setRateDevice(null);
+                              }}
+                            />
+                          )}
+                          {isAddingDevice && (
+                            <AddDeviceModal
+                              onClose={() => setIsAddingDevice(false)}
+                              onSuccess={fetchDevices}
+                            />
+                          )}
+                        </AnimatePresence>
+                      </>
+                    )}
+                    {activeTab === 'monitoring' && (
+                      <DeviceList
+                        devices={devices}
+                        onSelectDevice={setSelectedDevice}
                         onDeleteDevice={handleDeleteDevice}
                         onRenameDevice={handleRenameDevice}
                         onRefresh={() => fetchDevices(true)}
                         isRefreshing={isRefreshing}
-                        title="View Historical Logs"
-                        subtitle="Select a device to analyze past performance and telemetry history"
-                        hoverOverlayText="Show Device Logs"
+                        title="Select Asset to Monitor"
+                        subtitle="Choose a device to view real-time telemetry and diagnostics"
+                        showMonitoringInfo={true}
                       />
-                    )
-                  )}
-                  {activeTab === 'alerts' && (
-                    <AlertsView 
-                      device={selectedDevice || (devices.length > 0 ? devices[0] : null)} 
-                    />
-                  )}
-                  {activeTab === 'settings' && (
-                    <SettingsForm 
-                      settings={settings} 
-                      onSave={setSettings} 
-                      user={user}
-                      onUserUpdate={(updated) => setUser(prev => prev ? { ...prev, ...updated } : null)}
-                      onLogout={handleLogout}
-                    />
-                  )}
-                </>
-              )}
-            </motion.div>
-          </AnimatePresence>
+                    )}
+                    {activeTab === 'history' && (
+                      historyDevice ? (
+                        <HistoryView
+                          device={historyDevice}
+                          onBack={() => setHistoryDevice(null)}
+                        />
+                      ) : (
+                        <DeviceList
+                          devices={devices}
+                          onSelectDevice={setHistoryDevice}
+                          onDeleteDevice={handleDeleteDevice}
+                          onRenameDevice={handleRenameDevice}
+                          onRefresh={() => fetchDevices(true)}
+                          isRefreshing={isRefreshing}
+                          title="View Historical Logs"
+                          subtitle="Select a device to analyze past performance and telemetry history"
+                          hoverOverlayText="Show Device Logs"
+                        />
+                      )
+                    )}
+                    {activeTab === 'alerts' && (
+                      <AlertsView
+                        device={selectedDevice || (devices.length > 0 ? devices[0] : null)}
+                      />
+                    )}
+                    {activeTab === 'settings' && (
+                      <SettingsForm
+                        settings={settings}
+                        onSave={handleUpdateSettings}
+                        onPreviewTheme={handlePreviewTheme}
+                        user={user}
+                        onUserUpdate={(updated) => setUser(prev => prev ? { ...prev, ...updated } : null)}
+                        onLogout={handleLogout}
+                      />
+                    )}
+                  </>
+                )}
+              </motion.div>
+            </AnimatePresence>
           </div>
           <Footer />
         </main>

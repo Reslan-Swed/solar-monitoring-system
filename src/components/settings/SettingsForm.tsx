@@ -1,30 +1,44 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { DeviceSettings, User } from '@/src/types';
-import { Save, Bell, Sliders, Shield, User as UserIcon, Link2, BellRing, Key, ShieldCheck } from 'lucide-react';
+import { Save, Bell, Sliders, Shield, User as UserIcon, Link2, BellRing, Key, ShieldCheck, Sun, Moon, Palette } from 'lucide-react';
 import { cn } from '@/src/lib/utils';
 import { ProfileSettings } from './ProfileSettings';
 
 interface SettingsFormProps {
   settings: DeviceSettings;
   onSave: (settings: DeviceSettings) => void;
+  onPreviewTheme?: (theme: 'light' | 'dark') => void;
   user: User;
   onUserUpdate: (updatedUser: Partial<User>) => void;
   onLogout: () => void;
 }
 
-export const SettingsForm: React.FC<SettingsFormProps> = ({ settings, onSave, user, onUserUpdate, onLogout }) => {
+export const SettingsForm: React.FC<SettingsFormProps> = ({ 
+  settings, 
+  onSave, 
+  onPreviewTheme,
+  user, 
+  onUserUpdate, 
+  onLogout 
+}) => {
   const [activeSettingsTab, setActiveSettingsTab] = useState('Profile');
   const [formData, setFormData] = useState<DeviceSettings>(settings);
+
+  // Sync formData with settings when settings change externally (e.g. from preview)
+  useEffect(() => {
+    setFormData(prev => ({ ...prev, theme: settings.theme }));
+  }, [settings.theme]);
 
   const tabs = [
     { id: 'Profile', icon: UserIcon },
     { id: 'Alerts', icon: BellRing },
+    { id: 'Appearance', icon: Palette },
     { id: 'Security', icon: ShieldCheck },
     { id: 'Connectivity', icon: Link2 },
     { id: 'API Access', icon: Key },
   ];
 
-  const sections = [
+  const generalSections = [
     {
       title: 'General Preferences',
       icon: Sliders,
@@ -33,7 +47,21 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({ settings, onSave, us
         { label: 'Update Frequency (seconds)', key: 'updateFrequency', type: 'number', min: 1, max: 60 },
         { label: 'Efficiency Alert Threshold (%)', key: 'efficiencyThreshold', type: 'number', min: 0, max: 100 },
       ]
-    },
+    }
+  ];
+
+  const appearanceSections = [
+    {
+      title: 'Appearance',
+      icon: Palette,
+      description: 'Customize the visual theme and layout of the application.',
+      fields: [
+        { label: 'Theme Mode', key: 'theme', type: 'theme-toggle' },
+      ]
+    }
+  ];
+
+  const notificationSections = [
     {
       title: 'Notifications',
       icon: Bell,
@@ -52,8 +80,8 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({ settings, onSave, us
   return (
     <div className="max-w-4xl space-y-8">
       <div>
-        <h2 className="text-2xl font-bold text-slate-900">System Settings</h2>
-        <p className="text-slate-500">Global configuration for your monitoring dashboard</p>
+        <h2 className="text-2xl font-bold text-slate-900 dark:text-white">System Settings</h2>
+        <p className="text-slate-500 dark:text-slate-400">Global configuration for your monitoring dashboard</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
@@ -64,11 +92,11 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({ settings, onSave, us
               onClick={() => setActiveSettingsTab(tab.id)}
               className={`w-full text-left px-4 py-3 rounded-xl text-sm font-bold transition-all flex items-center gap-3 ${
                 activeSettingsTab === tab.id 
-                  ? 'bg-amber-500 text-white shadow-lg shadow-amber-200' 
-                  : 'text-slate-600 hover:bg-slate-100'
+                  ? 'bg-amber-500 text-white shadow-lg shadow-amber-200 dark:shadow-amber-900/20' 
+                  : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
               }`}
             >
-              <tab.icon className={cn("w-4 h-4", activeSettingsTab === tab.id ? "text-white" : "text-slate-400")} />
+              <tab.icon className={cn("w-4 h-4", activeSettingsTab === tab.id ? "text-white" : "text-slate-400 dark:text-slate-500")} />
               {tab.id}
             </button>
           ))}
@@ -81,16 +109,16 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({ settings, onSave, us
 
           {activeSettingsTab === 'Alerts' && (
             <div className="space-y-6">
-              {sections.map((section) => (
-                <div key={section.title} className="bg-white border border-slate-200 rounded-2xl overflow-hidden">
-                  <div className="p-6 border-b border-slate-100 bg-slate-50/50">
+              {[...generalSections, ...notificationSections].map((section) => (
+                <div key={section.title} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden">
+                  <div className="p-6 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50">
                     <div className="flex items-center gap-3">
-                      <div className="p-2 bg-white border border-slate-200 rounded-lg shadow-sm">
-                        <section.icon className="w-5 h-5 text-slate-600" />
+                      <div className="p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-sm">
+                        <section.icon className="w-5 h-5 text-slate-600 dark:text-slate-400" />
                       </div>
                       <div>
-                        <h3 className="font-bold text-slate-900">{section.title}</h3>
-                        <p className="text-xs text-slate-500">{section.description}</p>
+                        <h3 className="font-bold text-slate-900 dark:text-white">{section.title}</h3>
+                        <p className="text-xs text-slate-500 dark:text-slate-400">{section.description}</p>
                       </div>
                     </div>
                   </div>
@@ -98,19 +126,19 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({ settings, onSave, us
                   <div className="p-6 space-y-6">
                     {section.fields.map((field) => (
                       <div key={field.key} className="flex items-center justify-between">
-                        <label className="text-sm font-medium text-slate-700">{field.label}</label>
+                        <label className="text-sm font-medium text-slate-700 dark:text-slate-300">{field.label}</label>
                         {field.type === 'number' ? (
                           <input
                             type="number"
                             value={formData[field.key as keyof DeviceSettings] as number}
                             onChange={(e) => handleChange(field.key as keyof DeviceSettings, parseInt(e.target.value))}
-                            className="w-24 px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-sm font-bold focus:ring-2 focus:ring-amber-500/20 outline-none"
+                            className="w-24 px-3 py-1.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-bold focus:ring-2 focus:ring-amber-500/20 outline-none dark:text-white"
                           />
                         ) : (
                           <button
                             onClick={() => handleChange(field.key as keyof DeviceSettings, !formData[field.key as keyof DeviceSettings])}
                             className={`w-11 h-6 rounded-full transition-all relative ${
-                              formData[field.key as keyof DeviceSettings] ? 'bg-amber-500' : 'bg-slate-200'
+                              formData[field.key as keyof DeviceSettings] ? 'bg-amber-500' : 'bg-slate-200 dark:bg-slate-700'
                             }`}
                           >
                             <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${
@@ -125,12 +153,84 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({ settings, onSave, us
               ))}
 
               <div className="flex items-center justify-end gap-3 pt-4">
-                <button className="px-6 py-2.5 text-sm font-bold text-slate-600 hover:bg-slate-100 rounded-lg transition-all">
+                <button className="px-6 py-2.5 text-sm font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-all">
                   Discard Changes
                 </button>
                 <button 
                   onClick={() => onSave(formData)}
-                  className="px-6 py-2.5 bg-amber-500 text-white rounded-lg text-sm font-bold hover:bg-amber-600 transition-all shadow-lg shadow-amber-200 flex items-center gap-2"
+                  className="px-6 py-2.5 bg-amber-500 text-white rounded-lg text-sm font-bold hover:bg-amber-600 transition-all shadow-lg shadow-amber-200 dark:shadow-amber-900/20 flex items-center gap-2"
+                >
+                  <Save className="w-4 h-4" />
+                  Save Configuration
+                </button>
+              </div>
+            </div>
+          )}
+
+          {activeSettingsTab === 'Appearance' && (
+            <div className="space-y-6">
+              {appearanceSections.map((section) => (
+                <div key={section.title} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden">
+                  <div className="p-6 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-sm">
+                        <section.icon className="w-5 h-5 text-slate-600 dark:text-slate-400" />
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-slate-900 dark:text-white">{section.title}</h3>
+                        <p className="text-xs text-slate-500 dark:text-slate-400">{section.description}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="p-6 space-y-6">
+                    {section.fields.map((field) => (
+                      <div key={field.key} className="flex items-center justify-between">
+                        <label className="text-sm font-medium text-slate-700 dark:text-slate-300">{field.label}</label>
+                        <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-lg transition-colors border border-slate-200 dark:border-slate-700">
+                          <button
+                            onClick={() => {
+                              handleChange('theme', 'light');
+                              if (onPreviewTheme) onPreviewTheme('light');
+                            }}
+                            type="button"
+                            className={cn(
+                              "flex items-center gap-2 px-4 py-2 rounded-md text-xs font-bold transition-all",
+                              formData.theme === 'light' 
+                                ? "bg-white dark:bg-slate-700 text-amber-600 dark:text-amber-400 shadow-sm" 
+                                : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+                            )}
+                          >
+                            <Sun className="w-3.5 h-3.5" />
+                            Light Mode
+                          </button>
+                          <button
+                            onClick={() => {
+                              handleChange('theme', 'dark');
+                              if (onPreviewTheme) onPreviewTheme('dark');
+                            }}
+                            type="button"
+                            className={cn(
+                              "flex items-center gap-2 px-4 py-2 rounded-md text-xs font-bold transition-all",
+                              formData.theme === 'dark' 
+                                ? "bg-slate-700 dark:bg-slate-600 text-white shadow-sm" 
+                                : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+                            )}
+                          >
+                            <Moon className="w-3.5 h-3.5" />
+                            Dark Mode
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+
+              <div className="flex items-center justify-end gap-3 pt-4">
+                <button 
+                  onClick={() => onSave(formData)}
+                  className="px-6 py-2.5 bg-amber-500 text-white rounded-lg text-sm font-bold hover:bg-amber-600 transition-all shadow-lg shadow-amber-200 dark:shadow-amber-900/20 flex items-center gap-2"
                 >
                   <Save className="w-4 h-4" />
                   Save Configuration

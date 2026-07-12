@@ -96,16 +96,16 @@ export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ onBackTo
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center p-4 transition-colors duration-300">
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-amber-200/20 rounded-full blur-[120px]" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-200/20 rounded-full blur-[120px]" />
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-amber-200/20 dark:bg-amber-900/10 rounded-full blur-[120px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-200/20 dark:bg-blue-900/10 rounded-full blur-[120px]" />
       </div>
 
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md bg-white rounded-3xl shadow-2xl shadow-slate-200 p-8 border border-slate-100 relative z-10"
+        className="w-full max-w-md bg-white dark:bg-slate-900 rounded-3xl shadow-2xl shadow-slate-200 dark:shadow-none p-8 border border-slate-100 dark:border-slate-800 relative z-10"
       >
         <AnimatePresence mode="wait">
           {step === 'email' && (
@@ -117,28 +117,28 @@ export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ onBackTo
               className="space-y-6"
             >
               <div className="text-center space-y-2">
-                <div className="w-16 h-16 bg-amber-50 text-amber-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <div className="w-16 h-16 bg-amber-50 dark:bg-amber-900/20 text-amber-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
                   <KeyRound className="w-8 h-8" />
                 </div>
-                <h1 className="text-3xl font-black text-slate-900 tracking-tight">Reset Password</h1>
-                <p className="text-slate-500 font-medium">Enter your email to receive a reset code</p>
+                <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">Reset Password</h1>
+                <p className="text-slate-500 dark:text-slate-400 font-medium">Enter your email to receive a reset code</p>
               </div>
 
               <form onSubmit={handleEmailSubmit} className="space-y-4">
                 <div className="relative group">
-                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-amber-500 transition-colors" />
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 dark:text-slate-600 group-focus-within:text-amber-500 transition-colors" />
                   <input
                     required
                     type="email"
                     placeholder="Email Address"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all font-medium"
+                    className="w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all font-medium dark:text-white"
                   />
                 </div>
 
                 {error && (
-                  <div className="p-4 bg-red-50 text-red-600 rounded-2xl text-sm font-bold border border-red-100">
+                  <div className="p-4 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-2xl text-sm font-bold border border-red-100 dark:border-red-900/30">
                     {error}
                   </div>
                 )}
@@ -146,7 +146,7 @@ export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ onBackTo
                 <button
                   disabled={isLoading}
                   type="submit"
-                  className="w-full bg-slate-900 text-white py-4 rounded-2xl font-black flex items-center justify-center gap-2 hover:bg-slate-800 transition-all shadow-xl shadow-slate-200"
+                  className="w-full bg-slate-900 dark:bg-amber-500 text-white py-4 rounded-2xl font-black flex items-center justify-center gap-2 hover:bg-slate-800 dark:hover:bg-amber-600 transition-all shadow-xl shadow-slate-200 dark:shadow-none"
                 >
                   {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Send Reset Code'}
                 </button>
@@ -155,7 +155,7 @@ export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ onBackTo
                   <button 
                     type="button"
                     onClick={onBackToLogin}
-                    className="text-slate-500 font-bold hover:text-amber-600 transition-colors"
+                    className="text-slate-500 dark:text-slate-400 font-bold hover:text-amber-600 dark:hover:text-amber-500 transition-colors"
                   >
                     Back to Sign In
                   </button>
@@ -173,11 +173,11 @@ export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ onBackTo
               className="space-y-6"
             >
               <div className="text-center space-y-2">
-                <div className="w-16 h-16 bg-amber-50 text-amber-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <div className="w-16 h-16 bg-amber-50 dark:bg-amber-900/20 text-amber-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
                   <ShieldCheck className="w-8 h-8" />
                 </div>
-                <h1 className="text-3xl font-black text-slate-900 tracking-tight">Verify Code</h1>
-                <p className="text-slate-500 font-medium">Enter the 6-digit code sent to {email}</p>
+                <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">Verify Code</h1>
+                <p className="text-slate-500 dark:text-slate-400 font-medium">Enter the 6-digit code sent to {email}</p>
               </div>
 
               <form onSubmit={handleOtpVerify} className="space-y-6">
@@ -188,11 +188,11 @@ export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ onBackTo
                   placeholder="Enter Code"
                   value={otp}
                   onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
-                  className="w-full text-center text-3xl tracking-[1rem] py-5 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all font-black placeholder:tracking-normal placeholder:text-sm placeholder:font-medium"
+                  className="w-full text-center text-3xl tracking-[1rem] py-5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all font-black placeholder:tracking-normal placeholder:text-sm placeholder:font-medium dark:text-white"
                 />
 
                 {error && (
-                  <div className="p-4 bg-red-50 text-red-600 rounded-2xl text-sm font-bold border border-red-100">
+                  <div className="p-4 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-2xl text-sm font-bold border border-red-100 dark:border-red-900/30">
                     {error}
                   </div>
                 )}
@@ -201,7 +201,7 @@ export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ onBackTo
                   <button
                     disabled={isLoading}
                     type="submit"
-                    className="w-full bg-slate-900 text-white py-4 rounded-2xl font-black flex items-center justify-center gap-2 hover:bg-slate-800 transition-all shadow-xl shadow-slate-200"
+                    className="w-full bg-slate-900 dark:bg-amber-500 text-white py-4 rounded-2xl font-black flex items-center justify-center gap-2 hover:bg-slate-800 dark:hover:bg-amber-600 transition-all shadow-xl shadow-slate-200 dark:shadow-none"
                   >
                     {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Verify Code'}
                   </button>
@@ -210,7 +210,7 @@ export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ onBackTo
                     type="button"
                     onClick={handleResendOtp}
                     disabled={resendTimer > 0 || isLoading}
-                    className="w-full py-4 rounded-2xl font-bold flex items-center justify-center gap-2 text-slate-500 hover:bg-slate-50 transition-all disabled:opacity-50"
+                    className="w-full py-4 rounded-2xl font-bold flex items-center justify-center gap-2 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all disabled:opacity-50"
                   >
                     {resendTimer > 0 ? `Resend Code in ${resendTimer}s` : 'Resend Code'}
                   </button>
@@ -228,54 +228,54 @@ export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ onBackTo
               className="space-y-6"
             >
               <div className="text-center space-y-2">
-                <div className="w-16 h-16 bg-emerald-50 text-emerald-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <div className="w-16 h-16 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
                   <Lock className="w-8 h-8" />
                 </div>
-                <h1 className="text-3xl font-black text-slate-900 tracking-tight">New Password</h1>
-                <p className="text-slate-500 font-medium">Create a strong new password for your account</p>
+                <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">New Password</h1>
+                <p className="text-slate-500 dark:text-slate-400 font-medium">Create a strong new password for your account</p>
               </div>
 
               <form onSubmit={handleResetPassword} className="space-y-4">
                 <div className="relative group">
-                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-amber-500 transition-colors" />
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 dark:text-slate-600 group-focus-within:text-amber-500 transition-colors" />
                   <input
                     required
                     type={showPassword ? 'text' : 'password'}
                     placeholder="New Password"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
-                    className="w-full pl-12 pr-12 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all font-medium"
+                    className="w-full pl-12 pr-12 py-4 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all font-medium dark:text-white"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
                   >
                     {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                   </button>
                 </div>
 
                 <div className="relative group">
-                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-amber-500 transition-colors" />
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 dark:text-slate-600 group-focus-within:text-amber-500 transition-colors" />
                   <input
                     required
                     type={showConfirmPassword ? 'text' : 'password'}
                     placeholder="Confirm New Password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="w-full pl-12 pr-12 py-4 bg-slate-50 border border-slate-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all font-medium"
+                    className="w-full pl-12 pr-12 py-4 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all font-medium dark:text-white"
                   />
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
                   >
                     {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                   </button>
                 </div>
 
                 {error && (
-                  <div className="p-4 bg-red-50 text-red-600 rounded-2xl text-sm font-bold border border-red-100">
+                  <div className="p-4 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-2xl text-sm font-bold border border-red-100 dark:border-red-900/30">
                     {error}
                   </div>
                 )}
@@ -283,7 +283,7 @@ export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ onBackTo
                 <button
                   disabled={isLoading}
                   type="submit"
-                  className="w-full bg-slate-900 text-white py-4 rounded-2xl font-black flex items-center justify-center gap-2 hover:bg-slate-800 transition-all shadow-xl shadow-slate-200"
+                  className="w-full bg-slate-900 dark:bg-amber-500 text-white py-4 rounded-2xl font-black flex items-center justify-center gap-2 hover:bg-slate-800 dark:hover:bg-amber-600 transition-all shadow-xl shadow-slate-200 dark:shadow-none"
                 >
                   {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Reset Password'}
                 </button>
@@ -298,16 +298,16 @@ export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ onBackTo
               animate={{ opacity: 1, scale: 1 }}
               className="text-center space-y-6 py-8"
             >
-              <div className="w-20 h-20 bg-emerald-50 text-emerald-500 rounded-3xl flex items-center justify-center mx-auto mb-4 animate-bounce">
+              <div className="w-20 h-20 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-500 rounded-3xl flex items-center justify-center mx-auto mb-4 animate-bounce">
                 <CheckCircle2 className="w-10 h-10" />
               </div>
               <div className="space-y-2">
-                <h1 className="text-3xl font-black text-slate-900 tracking-tight">Success!</h1>
-                <p className="text-slate-500 font-medium">Your password has been reset successfully.</p>
+                <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">Success!</h1>
+                <p className="text-slate-500 dark:text-slate-400 font-medium">Your password has been reset successfully.</p>
               </div>
               <button
                 onClick={onBackToLogin}
-                className="w-full bg-slate-900 text-white py-4 rounded-2xl font-black flex items-center justify-center gap-2 hover:bg-slate-800 transition-all shadow-xl shadow-slate-200"
+                className="w-full bg-slate-900 dark:bg-amber-500 text-white py-4 rounded-2xl font-black flex items-center justify-center gap-2 hover:bg-slate-800 dark:hover:bg-amber-600 transition-all shadow-xl shadow-slate-200 dark:shadow-none"
               >
                 Return to Login
               </button>

@@ -83,35 +83,35 @@ export const AlertsView: React.FC<AlertsViewProps> = ({ device }) => {
 
   const getEventTypeStyles = (type: number) => {
     switch (type) {
-      case 1: return 'bg-red-50 text-red-700 border-red-100';
-      case 2: return 'bg-amber-50 text-amber-700 border-amber-100';
-      case 3: return 'bg-blue-50 text-blue-700 border-blue-100';
-      default: return 'bg-slate-50 text-slate-700 border-slate-100';
+      case 1: return 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 border-red-100 dark:border-red-900/30';
+      case 2: return 'bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 border-amber-100 dark:border-amber-900/30';
+      case 3: return 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 border-blue-100 dark:border-blue-900/30';
+      default: return 'bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-100 dark:border-slate-700';
     }
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 transition-colors">
       {!device ? (
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-12 text-center">
-          <Bell className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-          <h3 className="text-xl font-bold text-slate-900">No device selected</h3>
-          <p className="text-slate-500">Please select a device from the dashboard to view its event logs.</p>
+        <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-12 text-center">
+          <Bell className="w-12 h-12 text-slate-300 dark:text-slate-700 mx-auto mb-4" />
+          <h3 className="text-xl font-bold text-slate-900 dark:text-white">No device selected</h3>
+          <p className="text-slate-500 dark:text-slate-400">Please select a device from the dashboard to view its event logs.</p>
         </div>
       ) : (
         <>
           {/* Header & Controls */}
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 transition-colors">
         <div>
-          <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
+          <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
             <Bell className="w-6 h-6 text-indigo-500" />
             System Alerts & Notifications
           </h2>
-          <p className="text-slate-500 text-sm mt-1">Event logs and system notifications for {device.name}</p>
+          <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">Event logs and system notifications for {device.name}</p>
         </div>
         
         <div className="flex flex-wrap items-center gap-3">
-          <div className="flex bg-slate-100 rounded-lg p-1">
+          <div className="flex bg-slate-100 dark:bg-slate-800 rounded-lg p-1 transition-colors">
             {['24h', '7d', '30d', 'custom'].map((range) => (
               <button
                 key={range}
@@ -121,7 +121,7 @@ export const AlertsView: React.FC<AlertsViewProps> = ({ device }) => {
                 }}
                 className={cn(
                   "px-3 py-1.5 text-xs font-bold rounded-md transition-all",
-                  timeRange === range ? "bg-white text-indigo-600 shadow-sm" : "text-slate-500 hover:text-slate-700"
+                  timeRange === range ? "bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm" : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
                 )}
               >
                 {range.toUpperCase()}
@@ -130,23 +130,23 @@ export const AlertsView: React.FC<AlertsViewProps> = ({ device }) => {
           </div>
 
           {timeRange === 'custom' && (
-            <div className="flex items-center gap-2 bg-white border border-slate-200 rounded-lg p-1 px-2">
+            <div className="flex items-center gap-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-1 px-2">
               <input 
                 type="date" 
                 value={customStartDate}
                 onChange={(e) => setCustomStartDate(e.target.value)}
-                className="text-xs font-bold text-slate-600 bg-transparent outline-none cursor-pointer"
+                className="text-xs font-bold text-slate-600 dark:text-slate-300 bg-transparent outline-none cursor-pointer"
               />
-              <span className="text-slate-300">-</span>
+              <span className="text-slate-300 dark:text-slate-600">-</span>
               <input 
                 type="date" 
                 value={customEndDate}
                 onChange={(e) => setCustomEndDate(e.target.value)}
-                className="text-xs font-bold text-slate-600 bg-transparent outline-none cursor-pointer"
+                className="text-xs font-bold text-slate-600 dark:text-slate-300 bg-transparent outline-none cursor-pointer"
               />
               <button 
                 onClick={() => { setCurrentPage(1); fetchAlerts(); }}
-                className="p-1 hover:bg-slate-100 rounded text-indigo-600"
+                className="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded text-indigo-600 dark:text-indigo-400"
               >
                 <Search className="w-3.5 h-3.5" />
               </button>
@@ -156,50 +156,50 @@ export const AlertsView: React.FC<AlertsViewProps> = ({ device }) => {
       </div>
 
       {/* Alerts List */}
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 overflow-hidden transition-colors">
         {isLoading ? (
           <div className="flex flex-col items-center justify-center py-20 gap-3">
             <div className="w-10 h-10 border-4 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin" />
-            <p className="text-slate-400 font-medium animate-pulse">Retrieving event logs...</p>
+            <p className="text-slate-400 dark:text-slate-500 font-medium animate-pulse">Retrieving event logs...</p>
           </div>
         ) : error ? (
           <div className="p-12 text-center">
-            <div className="inline-flex p-3 bg-red-50 rounded-full mb-4">
+            <div className="inline-flex p-3 bg-red-50 dark:bg-red-900/20 rounded-full mb-4">
               <AlertCircle className="w-8 h-8 text-red-500" />
             </div>
-            <h3 className="text-lg font-bold text-slate-900 mb-1">Failed to load alerts</h3>
-            <p className="text-slate-500 max-w-md mx-auto mb-6">{error}</p>
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-1">Failed to load alerts</h3>
+            <p className="text-slate-500 dark:text-slate-400 max-w-md mx-auto mb-6">{error}</p>
             <button 
               onClick={fetchAlerts}
-              className="px-6 py-2 bg-slate-900 text-white rounded-lg font-bold hover:bg-slate-800 transition-all"
+              className="px-6 py-2 bg-slate-900 dark:bg-slate-800 text-white rounded-lg font-bold hover:bg-slate-800 dark:hover:bg-slate-700 transition-all"
             >
               Retry
             </button>
           </div>
         ) : alerts.length === 0 ? (
           <div className="py-24 text-center">
-            <div className="inline-flex p-4 bg-slate-50 rounded-full mb-4">
-              <BellOff className="w-10 h-10 text-slate-300" />
+            <div className="inline-flex p-4 bg-slate-50 dark:bg-slate-800 rounded-full mb-4">
+              <BellOff className="w-10 h-10 text-slate-300 dark:text-slate-600" />
             </div>
-            <h3 className="text-xl font-bold text-slate-900 mb-1">No alerts found</h3>
-            <p className="text-slate-500">System is running smoothly. No events recorded in the selected period.</p>
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-1">No alerts found</h3>
+            <p className="text-slate-500 dark:text-slate-400">System is running smoothly. No events recorded in the selected period.</p>
           </div>
         ) : (
           <>
             <div className="overflow-x-auto">
               <table className="w-full text-left">
                 <thead>
-                  <tr className="bg-slate-50 border-b border-slate-100">
-                    <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Type</th>
-                    <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Alert Name / Info</th>
-                    <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Occurrence Time</th>
-                    <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Extinction Time</th>
-                    <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider text-right">Code</th>
+                  <tr className="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-100 dark:border-slate-800">
+                    <th className="px-6 py-4 text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Type</th>
+                    <th className="px-6 py-4 text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Alert Name / Info</th>
+                    <th className="px-6 py-4 text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Occurrence Time</th>
+                    <th className="px-6 py-4 text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Extinction Time</th>
+                    <th className="px-6 py-4 text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider text-right">Code</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-50">
+                <tbody className="divide-y divide-slate-50 dark:divide-slate-800/50">
                   {alerts.map((alert) => (
-                    <tr key={alert.id} className="hover:bg-slate-50/50 transition-colors">
+                    <tr key={alert.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2">
                           {getEventIcon(alert.eventType)}
@@ -212,33 +212,33 @@ export const AlertsView: React.FC<AlertsViewProps> = ({ device }) => {
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="text-sm font-bold text-slate-900">
+                        <div className="text-sm font-bold text-slate-900 dark:text-white">
                           {alert.eventInfo || 'Unknown System Event'}
                         </div>
-                        <div className="text-[10px] text-slate-400 mt-0.5">
+                        <div className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">
                           SN: {alert.deviceSn}
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="flex items-center gap-2 text-slate-600">
-                          <Calendar className="w-3.5 h-3.5 text-slate-400" />
+                        <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400">
+                          <Calendar className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500" />
                           <span className="text-sm font-medium">{alert.occurrenceTime}</span>
                         </div>
                       </td>
                       <td className="px-6 py-4">
                         {alert.extinctionTime ? (
-                          <div className="flex items-center gap-2 text-slate-500">
-                            <Calendar className="w-3.5 h-3.5 text-slate-400 opacity-50" />
+                          <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400">
+                            <Calendar className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500 opacity-50" />
                             <span className="text-sm">{alert.extinctionTime}</span>
                           </div>
                         ) : (
-                          <span className="px-2 py-0.5 bg-emerald-50 text-emerald-600 rounded text-[10px] font-bold">
+                          <span className="px-2 py-0.5 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-500 rounded text-[10px] font-bold">
                             ACTIVE
                           </span>
                         )}
                       </td>
                       <td className="px-6 py-4 text-right">
-                        <span className="text-xs font-mono font-bold text-slate-400 bg-slate-50 px-2 py-1 rounded">
+                        <span className="text-xs font-mono font-bold text-slate-400 dark:text-slate-500 bg-slate-50 dark:bg-slate-800 px-2 py-1 rounded">
                           {alert.eventCode}
                         </span>
                       </td>
@@ -249,15 +249,15 @@ export const AlertsView: React.FC<AlertsViewProps> = ({ device }) => {
             </div>
 
             {/* Pagination */}
-            <div className="p-4 border-t border-slate-100 flex items-center justify-between bg-slate-50/50">
-              <p className="text-xs font-medium text-slate-500">
-                Showing <span className="text-slate-900">{alerts.length}</span> of <span className="text-slate-900">{totalCount}</span> events
+            <div className="p-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-800/50 transition-colors">
+              <p className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                Showing <span className="text-slate-900 dark:text-white">{alerts.length}</span> of <span className="text-slate-900 dark:text-white">{totalCount}</span> events
               </p>
               <div className="flex items-center gap-2">
                 <button
                   disabled={currentPage === 1 || isLoading}
                   onClick={() => setCurrentPage(prev => prev - 1)}
-                  className="p-1.5 rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 disabled:opacity-50 transition-all shadow-sm"
+                  className="p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700 disabled:opacity-50 transition-all shadow-sm"
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </button>
@@ -278,7 +278,7 @@ export const AlertsView: React.FC<AlertsViewProps> = ({ device }) => {
                           "w-8 h-8 rounded-lg text-xs font-bold transition-all shadow-sm",
                           currentPage === pageNum
                             ? "bg-indigo-600 text-white"
-                            : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50"
+                            : "bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700"
                         )}
                       >
                         {pageNum}
@@ -289,7 +289,7 @@ export const AlertsView: React.FC<AlertsViewProps> = ({ device }) => {
                 <button
                   disabled={currentPage === totalPages || isLoading}
                   onClick={() => setCurrentPage(prev => prev + 1)}
-                  className="p-1.5 rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 disabled:opacity-50 transition-all shadow-sm"
+                  className="p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700 disabled:opacity-50 transition-all shadow-sm"
                 >
                   <ChevronRight className="w-4 h-4" />
                 </button>
