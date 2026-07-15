@@ -8,9 +8,10 @@ import { cn } from '../../lib/utils';
 
 interface AlertsViewProps {
   device: DeviceType | null;
+  onBack?: () => void;
 }
 
-export const AlertsView: React.FC<AlertsViewProps> = ({ device }) => {
+export const AlertsView: React.FC<AlertsViewProps> = ({ device, onBack }) => {
   const [timeRange, setTimeRange] = useState('7d');
   const [customStartDate, setCustomStartDate] = useState(format(subDays(new Date(), 7), 'yyyy-MM-dd'));
   const [customEndDate, setCustomEndDate] = useState(format(new Date(), 'yyyy-MM-dd'));
@@ -102,12 +103,22 @@ export const AlertsView: React.FC<AlertsViewProps> = ({ device }) => {
         <>
           {/* Header & Controls */}
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 transition-colors">
-        <div>
-          <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-            <Bell className="w-6 h-6 text-indigo-500" />
-            System Alerts & Notifications
-          </h2>
-          <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">Event logs and system notifications for {device.name}</p>
+        <div className="flex items-center gap-4">
+          {onBack && (
+            <button
+              onClick={onBack}
+              className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl text-slate-500 dark:text-slate-400 transition-all"
+            >
+              <ChevronLeft className="w-6 h-6" />
+            </button>
+          )}
+          <div>
+            <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <Bell className="w-6 h-6 text-indigo-500" />
+              System Alerts & Notifications
+            </h2>
+            <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">Event logs and system notifications for {device.name}</p>
+          </div>
         </div>
         
         <div className="flex flex-wrap items-center gap-3">

@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Search, User as UserIcon, Bell, AlertCircle, AlertTriangle, Info, X, Calendar, Menu } from 'lucide-react';
+import { Search, User as UserIcon, Bell, AlertCircle, AlertTriangle, Info, X, Calendar, Menu, Settings as SettingsIcon, LogOut } from 'lucide-react';
 import { EventLogItem } from '@/src/api-types';
 import { User } from '@/src/types';
 import { cn } from '@/src/lib/utils';
+import { motion, AnimatePresence } from 'motion/react';
 
 interface NavbarProps {
   user: User;
@@ -10,16 +11,31 @@ interface NavbarProps {
   latestAlert?: EventLogItem | null;
   onMenuClick: () => void;
   isSidebarCollapsed: boolean;
+  onSettingsClick: () => void;
+  onLogout: () => void;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ user, title, latestAlert, onMenuClick, isSidebarCollapsed }) => {
-  const [showDropdown, setShowDropdown] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+export const Navbar: React.FC<NavbarProps> = ({ 
+  user, 
+  title, 
+  latestAlert, 
+  onMenuClick, 
+  isSidebarCollapsed,
+  onSettingsClick,
+  onLogout
+}) => {
+  const [showAlertDropdown, setShowAlertDropdown] = useState(false);
+  const [showUserDropdown, setShowUserDropdown] = useState(false);
+  const alertRef = useRef<HTMLDivElement>(null);
+  const userRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setShowDropdown(false);
+      if (alertRef.current && !alertRef.current.contains(event.target as Node)) {
+        setShowAlertDropdown(false);
+      }
+      if (userRef.current && !userRef.current.contains(event.target as Node)) {
+        setShowUserDropdown(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -69,99 +85,154 @@ export const Navbar: React.FC<NavbarProps> = ({ user, title, latestAlert, onMenu
           />
         </div>
 
-        <div className="flex items-center gap-4 border-l border-slate-200 dark:border-slate-800 pl-6 relative" ref={dropdownRef}>
-          <button 
-            onClick={() => setShowDropdown(!showDropdown)}
-            className="relative group flex items-center gap-2 px-3 py-1.5 rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-500 transition-all border border-transparent hover:border-slate-100 dark:hover:border-slate-700"
-          >
-            <div className="relative">
-              <Bell className={cn("w-5 h-5 transition-colors", latestAlert ? "text-amber-500" : "text-slate-500 dark:text-slate-400")} />
-              {latestAlert && (
-                <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white dark:border-slate-900 animate-bounce"></span>
-              )}
-            </div>
-            {latestAlert && (
-              <span className="text-xs font-bold text-slate-700 dark:text-slate-300 hidden lg:block max-w-[150px] truncate">
-                {latestAlert.eventInfo}
-              </span>
-            )}
-          </button>
-
-          {showDropdown && (
-            <div className="absolute top-full right-0 mt-2 w-80 bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-800 overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-200">
-              <div className="p-4 border-b border-slate-50 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-800/50">
-                <div className="flex items-center gap-2">
-                  <Bell className="w-4 h-4 text-indigo-500" />
-                  <h3 className="font-bold text-slate-900 dark:text-white text-sm">Active Alerts</h3>
-                </div>
-                <button onClick={() => setShowDropdown(false)} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-              
-              <div className="max-h-[400px] overflow-y-auto p-2">
-                {latestAlert ? (
-                  <div className="p-3 bg-white dark:bg-slate-900 rounded-xl border border-slate-50 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer group">
-                    <div className="flex gap-3">
-                      <div className="mt-1">
-                        {getEventIcon(latestAlert.eventType)}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between gap-2 mb-1">
-                          <span className={cn(
-                            "px-2 py-0.5 rounded text-[10px] font-bold border",
-                            getEventTypeStyles(latestAlert.eventType)
-                          )}>
-                            {latestAlert.eventType === 1 ? 'FAULT' : latestAlert.eventType === 2 ? 'WARNING' : 'INFO'}
-                          </span>
-                          <span className="text-[10px] text-slate-400 font-medium">ACTIVE</span>
-                        </div>
-                        <p className="text-sm font-bold text-slate-900 dark:text-white break-words">
-                          {latestAlert.eventInfo || 'System Event'}
-                        </p>
-                        <div className="flex items-center gap-1 mt-2 text-[10px] text-slate-500 dark:text-slate-400">
-                          <Calendar className="w-3 h-3" />
-                          {latestAlert.occurrenceTime}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="py-12 text-center">
-                    <div className="w-12 h-12 bg-slate-50 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-3">
-                      <Bell className="w-6 h-6 text-slate-200 dark:text-slate-700" />
-                    </div>
-                    <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">No Active Alerts</p>
-                  </div>
+        <div className="flex items-center gap-4 border-l border-slate-200 dark:border-slate-800 pl-6 relative">
+          <div className="relative" ref={alertRef}>
+            <button 
+              onClick={() => setShowAlertDropdown(!showAlertDropdown)}
+              className="relative group flex items-center gap-2 px-3 py-1.5 rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-500 transition-all border border-transparent hover:border-slate-100 dark:hover:border-slate-700"
+            >
+              <div className="relative">
+                <Bell className={cn("w-5 h-5 transition-colors", latestAlert ? "text-amber-500" : "text-slate-500 dark:text-slate-400")} />
+                {latestAlert && (
+                  <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white dark:border-slate-900 animate-bounce"></span>
                 )}
               </div>
-              
-              <div className="p-3 border-t border-slate-50 dark:border-slate-800 bg-slate-50/30 dark:bg-slate-800/30 text-center">
-                <button 
-                  onClick={() => setShowDropdown(false)}
-                  className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors"
-                >
-                  Close Panel
-                </button>
-              </div>
-            </div>
-          )}
-          
-          <div className="flex items-center gap-3 cursor-pointer group">
-            <div className="text-right hidden sm:block">
-              <p className="text-sm font-semibold text-slate-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-500 transition-colors">{user.name}</p>
-              <p className="text-xs text-slate-500 dark:text-slate-400 leading-none">Administrator</p>
-            </div>
-            <div className="w-10 h-10 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center overflow-hidden border border-slate-200 dark:border-slate-700 group-hover:border-amber-200 dark:group-hover:border-amber-900 transition-all">
-              {user.avatar ? (
-                <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
-              ) : (
-                <UserIcon className="w-5 h-5 text-slate-400 dark:text-slate-500" />
+              {latestAlert && (
+                <span className="text-xs font-bold text-slate-700 dark:text-slate-300 hidden lg:block max-w-[150px] truncate">
+                  {latestAlert.eventInfo}
+                </span>
               )}
-            </div>
+            </button>
+
+            <AnimatePresence>
+              {showAlertDropdown && (
+                <motion.div 
+                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                  className="absolute top-full right-0 mt-2 w-80 bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-800 overflow-hidden z-50"
+                >
+                  <div className="p-4 border-b border-slate-50 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-800/50">
+                    <div className="flex items-center gap-2">
+                      <Bell className="w-4 h-4 text-indigo-500" />
+                      <h3 className="font-bold text-slate-900 dark:text-white text-sm">Active Alerts</h3>
+                    </div>
+                    <button onClick={() => setShowAlertDropdown(false)} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                  
+                  <div className="max-h-[400px] overflow-y-auto p-2">
+                    {latestAlert ? (
+                      <div className="p-3 bg-white dark:bg-slate-900 rounded-xl border border-slate-50 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer group">
+                        <div className="flex gap-3">
+                          <div className="mt-1">
+                            {getEventIcon(latestAlert.eventType)}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between gap-2 mb-1">
+                              <span className={cn(
+                                "px-2 py-0.5 rounded text-[10px] font-bold border",
+                                getEventTypeStyles(latestAlert.eventType)
+                              )}>
+                                {latestAlert.eventType === 1 ? 'FAULT' : latestAlert.eventType === 2 ? 'WARNING' : 'INFO'}
+                              </span>
+                              <span className="text-[10px] text-slate-400 font-medium">ACTIVE</span>
+                            </div>
+                            <p className="text-sm font-bold text-slate-900 dark:text-white break-words">
+                              {latestAlert.eventInfo || 'System Event'}
+                            </p>
+                            <div className="flex items-center gap-1 mt-2 text-[10px] text-slate-500 dark:text-slate-400">
+                              <Calendar className="w-3 h-3" />
+                              {latestAlert.occurrenceTime}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="py-12 text-center">
+                        <div className="w-12 h-12 bg-slate-50 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-3">
+                          <Bell className="w-6 h-6 text-slate-200 dark:text-slate-700" />
+                        </div>
+                        <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">No Active Alerts</p>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="p-3 border-t border-slate-50 dark:border-slate-800 bg-slate-50/30 dark:bg-slate-800/30 text-center">
+                    <button 
+                      onClick={() => setShowAlertDropdown(false)}
+                      className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors"
+                    >
+                      Close Panel
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+          
+          <div className="relative" ref={userRef}>
+            <button 
+              onClick={() => setShowUserDropdown(!showUserDropdown)}
+              className="flex items-center gap-3 cursor-pointer group hover:opacity-80 transition-opacity"
+            >
+              <div className="text-right hidden sm:block">
+                <p className="text-sm font-semibold text-slate-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-500 transition-colors">{user.name}</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 leading-none">Administrator</p>
+              </div>
+              <div className="w-10 h-10 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center overflow-hidden border border-slate-200 dark:border-slate-700 group-hover:border-amber-200 dark:group-hover:border-amber-900 transition-all">
+                {user.avatar ? (
+                  <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
+                ) : (
+                  <UserIcon className="w-5 h-5 text-slate-400 dark:text-slate-500" />
+                )}
+              </div>
+            </button>
+
+            <AnimatePresence>
+              {showUserDropdown && (
+                <motion.div 
+                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                  className="absolute top-full right-0 mt-2 w-56 bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-800 overflow-hidden z-50"
+                >
+                  <div className="p-4 border-b border-slate-50 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50">
+                    <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">Signed in as</p>
+                    <p className="text-sm font-bold text-slate-900 dark:text-white truncate">{user.email}</p>
+                  </div>
+                  
+                  <div className="p-2">
+                    <button 
+                      onClick={() => {
+                        setShowUserDropdown(false);
+                        onSettingsClick();
+                      }}
+                      className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+                    >
+                      <SettingsIcon className="w-4 h-4 text-slate-400" />
+                      Edit Profile
+                    </button>
+                    <div className="h-px bg-slate-50 dark:bg-slate-800 my-1 mx-2" />
+                    <button 
+                      onClick={() => {
+                        setShowUserDropdown(false);
+                        onLogout();
+                      }}
+                      className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      Logout
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
       </div>
     </header>
   );
 };
+

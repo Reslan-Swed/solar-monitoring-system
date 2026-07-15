@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutDashboard, Zap, History, Bell, Settings, LogOut, Sun, ChevronLeft, ChevronRight, Menu, X } from 'lucide-react';
+import { LayoutDashboard, Zap, History, Bell, Settings, LogOut, Sun, ChevronLeft, ChevronRight, Menu, X, Cpu } from 'lucide-react';
 import { cn } from '@/src/lib/utils';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -25,6 +25,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'monitoring', label: 'Monitoring', icon: Zap },
+    { id: 'deviceSettings', label: 'Device Settings', icon: Cpu },
     { id: 'history', label: 'Historical Data', icon: History },
     { id: 'alerts', label: 'Alerts', icon: Bell },
     { id: 'settings', label: 'Settings', icon: Settings },

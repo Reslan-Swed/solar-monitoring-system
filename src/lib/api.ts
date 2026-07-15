@@ -165,6 +165,17 @@ class ApiClient {
     return this.post<DeviceRateData>('rate/getRate', { deviceSn });
   }
 
+  async getDeviceParams(deviceSn: string): Promise<Record<string, any>> {
+    return this.post<Record<string, any>>('paramSet/getParam', { deviceSn });
+  }
+
+  async setDeviceParams(deviceSn: string, commands: Record<string, string>): Promise<void> {
+    await this.post('paramSet/setParam', { 
+      deviceSn, 
+      commands: JSON.stringify(commands) 
+    });
+  }
+
   async calculateDeviceSns(devSn: string): Promise<string> {
     // Step 1: Construct the input string
     const inputString = "Voltronic" + devSn + "Power";

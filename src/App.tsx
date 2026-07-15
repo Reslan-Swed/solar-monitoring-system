@@ -23,6 +23,7 @@ import { RealTimeMonitor } from './components/monitoring/RealTimeMonitor';
 import { HistoryView } from './components/monitoring/HistoryView';
 import { AlertsView } from './components/monitoring/AlertsView';
 import { SettingsForm } from './components/settings/SettingsForm';
+import { DeviceParameterSettings } from './components/settings/DeviceParameterSettings';
 import { motion, AnimatePresence } from 'motion/react';
 
 // --- MOCK DATA ---
@@ -72,6 +73,11 @@ const mapApiDeviceToDevice = (item: DeviceListItem): Device => {
     return modes[mode] || mode;
   };
 
+  const savedCapacities = JSON.parse(localStorage.getItem('deviceBatteryCapacities') || '{}');
+  const batteryCapacity = savedCapacities[item.deviceSn] !== undefined 
+    ? parseFloat(savedCapacities[item.deviceSn]) 
+    : 2.5;
+
   return {
     id: String(item.id),
     name: item.nickName || `Device ${item.deviceSn}`,
@@ -83,7 +89,7 @@ const mapApiDeviceToDevice = (item: DeviceListItem): Device => {
     efficiency: 95,
     location: item.nation || 'Unknown',
     lastUpdated: 'Just now',
-    batteryCapacity: parseFloat(item.batteryCapacity) || 0,
+    batteryCapacity: batteryCapacity,
     workMode: getWorkModeLabel(item.workMode)
   };
 };
@@ -95,7 +101,9 @@ export default function App() {
   const [devices, setDevices] = useState<Device[]>([]);
   const [activeTab, setActiveTab] = useState('dashboard');
   const [selectedDevice, setSelectedDevice] = useState<Device | null>(null);
+  const [selectedDeviceSettings, setSelectedDeviceSettings] = useState<Device | null>(null);
   const [historyDevice, setHistoryDevice] = useState<Device | null>(null);
+  const [selectedAlertDevice, setSelectedAlertDevice] = useState<Device | null>(null);
   const [rateDevice, setRateDevice] = useState<Device | null>(null);
   const [isAddingDevice, setIsAddingDevice] = useState(false);
   const [alerts, setAlerts] = useState<Alert[]>(MOCK_ALERTS);
@@ -207,6 +215,19 @@ export default function App() {
     }
   };
 
+  const handleUpdateDeviceBatteryCapacity = (deviceSn: string, capacity: number) => {
+    try {
+      const savedCapacities = JSON.parse(localStorage.getItem('deviceBatteryCapacities') || '{}');
+      savedCapacities[deviceSn] = capacity;
+      localStorage.setItem('deviceBatteryCapacities', JSON.stringify(savedCapacities));
+      
+      // Update local state to reflect change immediately
+      setDevices(prev => prev.map(d => d.deviceSn === deviceSn ? { ...d, batteryCapacity: capacity } : d));
+    } catch (e) {
+      console.error('Failed to save battery capacity', e);
+    }
+  };
+
   useEffect(() => {
     if (!user) return;
     fetchDevices();
@@ -221,22 +242,33 @@ export default function App() {
 
     const fetchLatestAlert = async () => {
       try {
-        const targetDevice = selectedDevice || devices[0];
-        if (!targetDevice) return;
+        // Fetch alerts for ALL devices and find the latest active one
+        const alertPromises = devices.map(d => 
+          api.getEventLogs({
+            deviceSn: d.deviceSn,
+            startDate: format(subDays(new Date(), 7), 'yyyy-MM-dd HH:mm:ss'),
+            endDate: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
+            pageNum: 1,
+            pageSize: 5
+          }).catch(err => {
+            console.error(`Failed to fetch alerts for ${d.deviceSn}`, err);
+            return { list: [], total: 0, pages: 0 };
+          })
+        );
 
-        const response = await api.getEventLogs({
-          deviceSn: targetDevice.deviceSn,
-          startDate: format(subDays(new Date(), 7), 'yyyy-MM-dd HH:mm:ss'),
-          endDate: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
-          pageNum: 1,
-          pageSize: 20
+        const responses = await Promise.all(alertPromises);
+        const allActiveAlerts: EventLogItem[] = [];
+        
+        responses.forEach(resp => {
+          if (resp && resp.list) {
+            const active = resp.list.filter(a => !a.extinctionTime);
+            allActiveAlerts.push(...active);
+          }
         });
 
-        // Find the latest active alert (extinctionTime is null)
-        const activeAlerts = response.list.filter(a => !a.extinctionTime);
-        if (activeAlerts.length > 0) {
-          // Sort by occurrenceTime descending just in case
-          const sorted = activeAlerts.sort((a, b) =>
+        if (allActiveAlerts.length > 0) {
+          // Sort by occurrenceTime descending
+          const sorted = allActiveAlerts.sort((a, b) =>
             new Date(b.occurrenceTime).getTime() - new Date(a.occurrenceTime).getTime()
           );
           setLatestAlert(sorted[0]);
@@ -244,14 +276,14 @@ export default function App() {
           setLatestAlert(null);
         }
       } catch (err) {
-        console.error('Failed to fetch latest alert', err);
+        console.error('Failed to fetch latest alerts across devices', err);
       }
     };
 
     fetchLatestAlert();
     const interval = setInterval(fetchLatestAlert, 60000); // Poll every minute
     return () => clearInterval(interval);
-  }, [user, devices, selectedDevice]);
+  }, [user, devices]);
 
   const handleLogin = (data: LoginData) => {
     setUser({
@@ -315,7 +347,9 @@ export default function App() {
         setActiveTab={(tab) => {
           setActiveTab(tab);
           setSelectedDevice(null);
+          setSelectedDeviceSettings(null);
           setHistoryDevice(null);
+          setSelectedAlertDevice(null);
         }}
         onLogout={handleLogout}
         isCollapsed={isSidebarCollapsed}
@@ -334,6 +368,13 @@ export default function App() {
           latestAlert={latestAlert} 
           onMenuClick={() => setIsSidebarOpen(true)}
           isSidebarCollapsed={isSidebarCollapsed}
+          onSettingsClick={() => {
+            setActiveTab('settings');
+            setSelectedDevice(null);
+            setSelectedDeviceSettings(null);
+            setHistoryDevice(null);
+          }}
+          onLogout={handleLogout}
         />
 
         <main className="flex-1 pt-24 pb-0 px-4 sm:px-8 max-w-[1600px] mx-auto w-full flex flex-col">
@@ -382,12 +423,14 @@ export default function App() {
                                 fetchDevices();
                                 setRateDevice(null);
                               }}
+                              onUpdateCapacity={handleUpdateDeviceBatteryCapacity}
                             />
                           )}
                           {isAddingDevice && (
                             <AddDeviceModal
                               onClose={() => setIsAddingDevice(false)}
                               onSuccess={fetchDevices}
+                              onSaveCapacity={handleUpdateDeviceBatteryCapacity}
                             />
                           )}
                         </AnimatePresence>
@@ -405,6 +448,27 @@ export default function App() {
                         subtitle="Choose a device to view real-time telemetry and diagnostics"
                         showMonitoringInfo={true}
                       />
+                    )}
+                    {activeTab === 'deviceSettings' && (
+                      selectedDeviceSettings ? (
+                        <DeviceParameterSettings 
+                          device={selectedDeviceSettings} 
+                          onBack={() => setSelectedDeviceSettings(null)} 
+                          onUpdateCapacity={handleUpdateDeviceBatteryCapacity}
+                        />
+                      ) : (
+                        <DeviceList 
+                          devices={devices}
+                          onSelectDevice={setSelectedDeviceSettings}
+                          onDeleteDevice={handleDeleteDevice}
+                          onRenameDevice={handleRenameDevice}
+                          onRefresh={() => fetchDevices(true)}
+                          isRefreshing={isRefreshing}
+                          title="Device Operational Settings"
+                          subtitle="Select a device to modify its deep operational parameters and rules"
+                          hoverOverlayText="Configure Hardware"
+                        />
+                      )
                     )}
                     {activeTab === 'history' && (
                       historyDevice ? (
@@ -427,9 +491,24 @@ export default function App() {
                       )
                     )}
                     {activeTab === 'alerts' && (
-                      <AlertsView
-                        device={selectedDevice || (devices.length > 0 ? devices[0] : null)}
-                      />
+                      selectedAlertDevice ? (
+                        <AlertsView
+                          device={selectedAlertDevice}
+                          onBack={() => setSelectedAlertDevice(null)}
+                        />
+                      ) : (
+                        <DeviceList
+                          devices={devices}
+                          onSelectDevice={setSelectedAlertDevice}
+                          onDeleteDevice={handleDeleteDevice}
+                          onRenameDevice={handleRenameDevice}
+                          onRefresh={() => fetchDevices(true)}
+                          isRefreshing={isRefreshing}
+                          title="Select Asset to View Alerts"
+                          subtitle="Choose a device to inspect active alarms and historical event logs"
+                          hoverOverlayText="Show Device Alerts"
+                        />
+                      )
                     )}
                     {activeTab === 'settings' && (
                       <SettingsForm

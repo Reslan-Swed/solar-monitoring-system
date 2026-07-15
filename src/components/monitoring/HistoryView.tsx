@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Device } from '@/src/types';
 import { HistoricalDataItem } from '@/src/api-types';
 import { api } from '@/src/lib/api';
@@ -31,10 +31,19 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ device, onBack }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [hourlyTrendData, setHourlyTrendData] = useState<any[]>([]);
+  const [trendRawRecords, setTrendRawRecords] = useState<HistoricalDataItem[]>([]);
   const [isTrendLoading, setIsTrendLoading] = useState(false);
+
+  const lastFetchParams = React.useRef<string>('');
+  const lastTrendParams = React.useRef<string>('');
 
   const fetch24hTrend = useCallback(async () => {
     if (!device) return;
+    
+    const paramsKey = `${device.deviceSn}`;
+    if (lastTrendParams.current === paramsKey) return;
+    lastTrendParams.current = paramsKey;
+
     setIsTrendLoading(true);
     try {
       const end = new Date();
@@ -73,6 +82,8 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ device, onBack }) => {
           }
         }
       }
+
+      setTrendRawRecords(allRecords);
 
       // Group by hour
       const hourlyGroups: Record<string, HistoricalDataItem[]> = {};
@@ -114,6 +125,11 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ device, onBack }) => {
 
   const fetchData = useCallback(async () => {
     if (!device) return;
+
+    const paramsKey = `${device.deviceSn}-${timeRange}-${currentPage}-${customStartDate}-${customEndDate}`;
+    if (lastFetchParams.current === paramsKey) return;
+    lastFetchParams.current = paramsKey;
+
     setIsLoading(true);
     setError(null);
     try {
@@ -150,8 +166,11 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ device, onBack }) => {
 
   useEffect(() => {
     fetchData();
+  }, [fetchData]);
+
+  useEffect(() => {
     fetch24hTrend();
-  }, [fetchData, fetch24hTrend]);
+  }, [fetch24hTrend]);
 
   const [downloadType, setDownloadType] = useState<'day' | 'month'>('day');
 
@@ -199,6 +218,13 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ device, onBack }) => {
     };
     return modes[mode] || mode;
   };
+
+  const stabilityPercent = useMemo(() => {
+    if (trendRawRecords.length === 0) return 0;
+    // Simple stability check: if device is not in fault mode, it's considered stable
+    const stableRecords = trendRawRecords.filter(it => it.workMode !== 'F' && it.workMode !== 'Fault' && it.fault1 == '0');
+    return Math.round((stableRecords.length / trendRawRecords.length) * 100);
+  }, [trendRawRecords]);
 
   return (
     <div className="space-y-6">
@@ -253,51 +279,53 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ device, onBack }) => {
             </div>
           )}
 
-          <div className="flex items-center gap-2 p-1 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-200 dark:border-slate-800">
-            <div className="flex items-center gap-1 mr-2 px-2 border-r border-slate-200 dark:border-slate-700">
-              <button 
-                onClick={() => setDownloadType('day')}
-                className={cn(
-                  "px-2 py-1 text-[10px] font-bold rounded transition-all",
-                  downloadType === 'day' ? "bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm" : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
-                )}
-              >
-                DAY
-              </button>
-              <button 
-                onClick={() => setDownloadType('month')}
-                className={cn(
-                  "px-2 py-1 text-[10px] font-bold rounded transition-all",
-                  downloadType === 'month' ? "bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm" : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
-                )}
-              >
-                MONTH
-              </button>
-            </div>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 p-1 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-200 dark:border-slate-800">
+              <div className="flex items-center gap-1 mr-2 px-2 border-r border-slate-200 dark:border-slate-700">
+                <button 
+                  onClick={() => setDownloadType('day')}
+                  className={cn(
+                    "px-2 py-1 text-[10px] font-bold rounded transition-all",
+                    downloadType === 'day' ? "bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm" : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+                  )}
+                >
+                  DAY
+                </button>
+                <button 
+                  onClick={() => setDownloadType('month')}
+                  className={cn(
+                    "px-2 py-1 text-[10px] font-bold rounded transition-all",
+                    downloadType === 'month' ? "bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm" : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+                  )}
+                >
+                  MONTH
+                </button>
+              </div>
 
-            {downloadType === 'day' ? (
-              <input 
-                type="date" 
-                value={exportDate}
-                onChange={(e) => setExportDate(e.target.value)}
-                className="text-xs font-bold text-slate-600 dark:text-slate-300 bg-transparent outline-none cursor-pointer pr-2 dark:[color-scheme:dark] text-current"
-              />
-            ) : (
-              <input 
-                type="month" 
-                value={exportMonth}
-                onChange={(e) => setExportMonth(e.target.value)}
-                className="text-xs font-bold text-slate-600 dark:text-slate-300 bg-transparent outline-none cursor-pointer pr-2 dark:[color-scheme:dark] text-current"
-              />
-            )}
+              {downloadType === 'day' ? (
+                <input 
+                  type="date" 
+                  value={exportDate}
+                  onChange={(e) => setExportDate(e.target.value)}
+                  className="text-xs font-bold text-slate-600 dark:text-slate-300 bg-transparent outline-none cursor-pointer pr-2 dark:[color-scheme:dark] text-current"
+                />
+              ) : (
+                <input 
+                  type="month" 
+                  value={exportMonth}
+                  onChange={(e) => setExportMonth(e.target.value)}
+                  className="text-xs font-bold text-slate-600 dark:text-slate-300 bg-transparent outline-none cursor-pointer pr-2 dark:[color-scheme:dark] text-current"
+                />
+              )}
+            </div>
+            <button 
+              onClick={handleDownload}
+              className="flex items-center gap-2 px-4 py-2 bg-emerald-500 text-white rounded-lg text-sm font-semibold hover:bg-emerald-600 transition-all shadow-md shadow-emerald-200 dark:shadow-emerald-900/20 whitespace-nowrap"
+            >
+              <Download className="w-4 h-4" />
+              Export
+            </button>
           </div>
-          <button 
-            onClick={handleDownload}
-            className="flex items-center gap-2 px-4 py-2 bg-emerald-500 text-white rounded-lg text-sm font-semibold hover:bg-emerald-600 transition-all shadow-md shadow-emerald-200 dark:shadow-emerald-900/20"
-          >
-            <Download className="w-4 h-4" />
-            Export
-          </button>
         </div>
       </div>
 
@@ -320,28 +348,26 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ device, onBack }) => {
               <h3 className="font-bold text-slate-900 dark:text-white">24h Power Distribution Trend</h3>
               <p className="text-sm text-slate-500 dark:text-slate-400">Hourly average power metrics across all sources</p>
             </div>
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-6 text-xs font-medium">
-                <div className="flex items-center gap-1.5">
-                  <div className="w-3 h-3 rounded-full bg-amber-500" />
-                  <span className="text-slate-600 dark:text-slate-400">PV Power</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <div className="w-3 h-3 rounded-full bg-blue-500" />
-                  <span className="text-slate-600 dark:text-slate-400">Load</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <div className="w-3 h-3 rounded-full bg-emerald-500" />
-                  <span className="text-slate-600 dark:text-slate-400">Grid</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <div className="w-3 h-3 rounded-full bg-purple-500" />
-                  <span className="text-slate-600 dark:text-slate-400">Batt Charge</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <div className="w-3 h-3 rounded-full bg-pink-500" />
-                  <span className="text-slate-600 dark:text-slate-400">Batt Discharge</span>
-                </div>
+            <div className="flex flex-wrap items-center justify-end gap-3 sm:gap-6 text-xs font-medium">
+              <div className="flex items-center gap-1.5">
+                <div className="w-3 h-3 rounded-full bg-amber-500" />
+                <span className="text-slate-600 dark:text-slate-400">PV Power</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <div className="w-3 h-3 rounded-full bg-blue-500" />
+                <span className="text-slate-600 dark:text-slate-400">Load</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <div className="w-3 h-3 rounded-full bg-emerald-500" />
+                <span className="text-slate-600 dark:text-slate-400">Grid</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <div className="w-3 h-3 rounded-full bg-purple-500" />
+                <span className="text-slate-600 dark:text-slate-400">Batt Charge</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <div className="w-3 h-3 rounded-full bg-pink-500" />
+                <span className="text-slate-600 dark:text-slate-400">Batt Discharge</span>
               </div>
             </div>
           </div>
@@ -361,10 +387,11 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ device, onBack }) => {
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#334155" opacity={0.1} />
                 <XAxis 
-                  dataKey="time" 
+                  dataKey="fullTime" 
                   axisLine={false} 
                   tickLine={false} 
                   tick={{ fontSize: 10, fill: '#94a3b8' }}
+                  tickFormatter={(val) => format(new Date(val), 'HH:00')}
                 />
                 <YAxis 
                   axisLine={false} 
@@ -373,6 +400,7 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ device, onBack }) => {
                   unit="W"
                 />
                 <Tooltip 
+                  labelFormatter={(val) => format(new Date(val), 'MMM dd, HH:00')}
                   contentStyle={{ 
                     backgroundColor: '#1e293b', 
                     border: 'none', 
@@ -433,36 +461,38 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ device, onBack }) => {
         </div>
 
         <div className="lg:col-span-2 bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 relative min-h-[400px]">
-          {isLoading && (
+          {isTrendLoading && (
             <div className="absolute inset-0 bg-white/50 dark:bg-slate-900/50 backdrop-blur-[1px] z-10 flex items-center justify-center">
               <Loader2 className="w-8 h-8 text-amber-500 animate-spin" />
             </div>
           )}
           <div className="flex items-center justify-between mb-8">
-            <h3 className="font-bold text-slate-900 dark:text-white">Energy Production Trends (Watts)</h3>
+            <h3 className="font-bold text-slate-900 dark:text-white">24h Energy Output (Hourly)</h3>
             <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400 text-sm">
-              <Calendar className="w-4 h-4" />
-              {format(new Date(), 'MMMM yyyy')}
+              <Clock className="w-4 h-4" />
+              Last 24 Hours
             </div>
           </div>
           
           <div className="h-[350px]">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={historyData}>
+              <BarChart data={hourlyTrendData}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#334155" opacity={0.1} />
                 <XAxis 
-                  dataKey="createTime" 
+                  dataKey="fullTime" 
                   axisLine={false} 
                   tickLine={false} 
                   tick={{ fontSize: 10, fill: '#94a3b8' }}
-                  tickFormatter={(val) => val.split(' ')[0]} // Show only date
+                  tickFormatter={(val) => format(new Date(val), 'HH:00')}
                 />
                 <YAxis 
                   axisLine={false} 
                   tickLine={false} 
                   tick={{ fontSize: 10, fill: '#94a3b8' }}
+                  unit="W"
                 />
                 <Tooltip 
+                  labelFormatter={(val) => format(new Date(val), 'MMM dd, HH:00')}
                   contentStyle={{ 
                     backgroundColor: '#1e293b', 
                     border: 'none', 
@@ -473,10 +503,10 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ device, onBack }) => {
                   itemStyle={{ color: '#f8fafc' }}
                 />
                 <Bar 
-                  dataKey="acOutputActivePowerTotal" 
+                  dataKey="load" 
                   fill="#f59e0b" 
                   radius={[4, 4, 0, 0]} 
-                  name="Output (W)"
+                  name="Avg Output (W)"
                 />
               </BarChart>
             </ResponsiveContainer>
@@ -484,7 +514,7 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ device, onBack }) => {
         </div>
 
         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6">
-          <h3 className="font-bold text-slate-900 dark:text-white mb-6">Device Insights</h3>
+          <h3 className="font-bold text-slate-900 dark:text-white mb-6">24h Device Insights</h3>
           <div className="space-y-4">
             <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl">
               <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase mb-1">Max Thermal Load</p>
@@ -492,7 +522,7 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ device, onBack }) => {
                 <div className="flex items-center gap-2">
                   <Thermometer className="w-4 h-4 text-orange-500" />
                   <span className="text-lg font-black text-slate-900 dark:text-white">
-                    {historyData.length > 0 ? Math.max(...historyData.map(d => parseFloat(d.maxTemperature))) : '0'}°C
+                    {trendRawRecords.length > 0 ? Math.max(...trendRawRecords.map(d => parseFloat(d.maxTemperature) || 0)).toFixed(1) : '0'}°C
                   </span>
                 </div>
               </div>
@@ -504,7 +534,7 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ device, onBack }) => {
                 <div className="flex items-center gap-2">
                   <Sun className="w-4 h-4 text-amber-500" />
                   <span className="text-lg font-black text-slate-900 dark:text-white">
-                    {historyData.length > 0 ? Math.max(...historyData.map(d => parseFloat(d.pvInputPower1))) : '0'} W
+                    {trendRawRecords.length > 0 ? Math.max(...trendRawRecords.map(d => parseFloat(d.pvInputPower1) || 0)) : '0'} W
                   </span>
                 </div>
               </div>
@@ -516,7 +546,7 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ device, onBack }) => {
                 <div className="flex items-center gap-2">
                   <Zap className="w-4 h-4 text-blue-500" />
                   <span className="text-lg font-black text-slate-900 dark:text-white">
-                    {historyData.length > 0 ? Math.max(...historyData.map(d => d.acOutputActivePowerTotal)) : '0'} W
+                    {trendRawRecords.length > 0 ? Math.max(...trendRawRecords.map(d => Number(d.acOutputActivePowerTotal) || 0)) : '0'} W
                   </span>
                 </div>
               </div>
@@ -527,10 +557,15 @@ export const HistoryView: React.FC<HistoryViewProps> = ({ device, onBack }) => {
             <h4 className="text-xs uppercase font-bold text-slate-400 dark:text-slate-500 mb-4 tracking-wider">Operational Status</h4>
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm text-slate-300">System Stability</span>
-              <span className="text-sm font-bold text-emerald-400">98.2%</span>
+              <span className="text-sm font-bold text-emerald-400">
+                {stabilityPercent}%
+              </span>
             </div>
             <div className="w-full bg-slate-800 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden">
-              <div className="bg-emerald-500 h-full w-[98%] rounded-full"></div>
+              <div 
+                className="bg-emerald-500 h-full rounded-full transition-all duration-500" 
+                style={{ width: `${stabilityPercent}%` }}
+              ></div>
             </div>
           </div>
         </div>

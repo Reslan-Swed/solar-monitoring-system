@@ -43,13 +43,19 @@ export const RealTimeMonitor: React.FC<RealTimeMonitorProps> = ({ device, onBack
   const [isLoading, setIsLoading] = useState(false);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
+  const lastFetchedSn = React.useRef<string | null>(null);
+  const isFetching = React.useRef(false);
+
   const fetchData = useCallback(async () => {
-    if (!device) return;
+    if (!device || isFetching.current) return;
+    
+    isFetching.current = true;
     setIsLoading(true);
     try {
       const data = await api.getRealTimeTelemetry(device.deviceSn);
       setTelemetry(data);
       setLastUpdated(new Date());
+      lastFetchedSn.current = device.deviceSn;
 
       // Update local history for the chart
       const newHistoryPoint = {
@@ -67,14 +73,19 @@ export const RealTimeMonitor: React.FC<RealTimeMonitorProps> = ({ device, onBack
       console.error('Telemetry fetch failed', err);
     } finally {
       setIsLoading(false);
+      isFetching.current = false;
     }
   }, [device?.deviceSn]);
 
   useEffect(() => {
-    fetchData();
+    // Only fetch if we haven't fetched for this specific device SN yet
+    if (lastFetchedSn.current !== device.deviceSn) {
+      fetchData();
+    }
+    
     const interval = setInterval(fetchData, 10000); // Auto update every 10s
     return () => clearInterval(interval);
-  }, [fetchData]);
+  }, [fetchData, device.deviceSn]);
 
   if (!telemetry && isLoading) {
     return (
@@ -103,15 +114,14 @@ export const RealTimeMonitor: React.FC<RealTimeMonitorProps> = ({ device, onBack
   const calculateBatteryEstimation = () => {
     if (telemetry?.workMode !== 'B') return null;
 
-    const capacity = parseFloat(telemetry?.batteryCapacity || '0');
+    const capacityPercent = parseFloat(telemetry?.batteryCapacity || '0');
     const dischargePower = parseFloat(telemetry?.batteryDischargingPower || '0');
 
-    if (dischargePower <= 0 || capacity <= 0) return null;
+    if (dischargePower <= 0 || capacityPercent <= 0) return null;
 
-    // Assuming a standard 5.12kWh battery bank (100Ah @ 51.2V) for estimation
-    // If we had the actual Ah from settings, we'd use that.
-    const totalEnergyWh = 2500;
-    const remainingEnergyWh = totalEnergyWh * (capacity / 100);
+    // Use the custom battery capacity (default to 2.5kW)
+    const totalEnergyWh = (device.batteryCapacity || 2.5) * 1000;
+    const remainingEnergyWh = totalEnergyWh * (capacityPercent / 100);
     const hoursRemaining = remainingEnergyWh / dischargePower;
 
     const h = Math.floor(hoursRemaining);
@@ -323,14 +333,14 @@ export const RealTimeMonitor: React.FC<RealTimeMonitorProps> = ({ device, onBack
                 value={telemetry?.statusSolar1} 
                 mapping={{
                   0: { label: 'No Solar', color: 'text-slate-500', bg: 'bg-slate-50 dark:bg-slate-800' },
-                  1: { label: 'Solar Available', color: 'text-amber-500', bg: 'bg-amber-50 dark:bg-amber-900/20' }
+                  1: { label: 'Solar Available', color: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-900/20' }
                 }}
               />
               <StatusRow 
                 label="Battery Status" 
-                value={telemetry?.statusBattery} 
+                value={(+telemetry?.batteryDischargingPower) > 0 ? 2 : (+telemetry?.batteryChargingPower) > 0 ? 1 : 0} 
                 mapping={{
-                  0: { label: 'Idle', color: 'text-slate-500', bg: 'bg-slate-50 dark:bg-slate-800' },
+                  0: { label: 'Fully Charged', color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-900/20' },
                   1: { label: 'Charging', color: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-900/20' },
                   2: { label: 'Discharging', color: 'text-amber-500', bg: 'bg-amber-50 dark:bg-amber-900/20' }
                 }}
@@ -349,15 +359,6 @@ export const RealTimeMonitor: React.FC<RealTimeMonitorProps> = ({ device, onBack
                 mapping={{
                   0: { label: 'No Load', color: 'text-slate-500', bg: 'bg-slate-50 dark:bg-slate-800' },
                   1: { label: 'Active Load', color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-900/20' }
-                }}
-              />
-              <StatusRow 
-                label="Inverter Mode" 
-                value={telemetry?.statusInverter} 
-                mapping={{
-                  0: { label: 'Bypass', color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-900/20' },
-                  1: { label: 'Charging', color: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-900/20' },
-                  2: { label: 'Discharging', color: 'text-amber-500', bg: 'bg-amber-50 dark:bg-amber-900/20' }
                 }}
               />
             </div>

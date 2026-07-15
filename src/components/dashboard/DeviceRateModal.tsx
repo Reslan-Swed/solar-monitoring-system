@@ -11,15 +11,17 @@ interface DeviceRateModalProps {
   onClose: () => void;
   onDelete: (id: string) => void;
   onRename: (deviceSn: string, name: string) => void;
+  onUpdateCapacity?: (deviceSn: string, capacity: number) => void;
 }
 
-export const DeviceRateModal: React.FC<DeviceRateModalProps> = ({ device, onClose, onDelete, onRename }) => {
+export const DeviceRateModal: React.FC<DeviceRateModalProps> = ({ device, onClose, onDelete, onRename, onUpdateCapacity }) => {
   const [data, setData] = useState<DeviceRateData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
   const [isEditingName, setIsEditingName] = useState(false);
   const [newName, setNewName] = useState(device.name);
+  const [batteryCapacity, setBatteryCapacity] = useState(String(device.batteryCapacity || 2.5));
   const [isUpdatingName, setIsUpdatingName] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -48,19 +50,23 @@ export const DeviceRateModal: React.FC<DeviceRateModalProps> = ({ device, onClos
     fetchData();
   }, [device.deviceSn]);
 
-  const handleRename = async () => {
-    if (!newName.trim() || newName === device.name) {
-      setIsEditingName(false);
-      return;
-    }
+  const handleSaveSettings = async () => {
+    if (!newName.trim()) return;
 
     setIsUpdatingName(true);
     try {
-      await api.updateDeviceNickName(device.deviceSn, newName);
-      onRename(device.deviceSn, newName);
+      if (newName !== device.name) {
+        await api.updateDeviceNickName(device.deviceSn, newName);
+        onRename(device.deviceSn, newName);
+      }
+      
+      if (onUpdateCapacity) {
+        onUpdateCapacity(device.deviceSn, parseFloat(batteryCapacity) || 2.5);
+      }
+      
       setIsEditingName(false);
     } catch (err) {
-      console.error('Failed to update nickname', err);
+      console.error('Failed to update settings', err);
     } finally {
       setIsUpdatingName(false);
     }
@@ -100,27 +106,43 @@ export const DeviceRateModal: React.FC<DeviceRateModalProps> = ({ device, onClos
         <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-900/50">
           <div className="flex-grow">
             {isEditingName ? (
-              <div className="flex items-center gap-2 max-w-md">
-                <input 
-                  type="text"
-                  autoFocus
-                  value={newName}
-                  onChange={(e) => setNewName(e.target.value)}
-                  className="px-3 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-lg font-bold outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 dark:text-white transition-all w-full"
-                />
-                <button 
-                  onClick={handleRename}
-                  disabled={isUpdatingName}
-                  className="p-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-colors disabled:opacity-50"
-                >
-                  {isUpdatingName ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
-                </button>
-                <button 
-                  onClick={() => { setIsEditingName(false); setNewName(device.name); }}
-                  className="p-2 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
-                >
-                  <X className="w-4 h-4" />
-                </button>
+              <div className="space-y-4 max-w-md">
+                <div className="space-y-1">
+                  <label className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">Nickname</label>
+                  <input 
+                    type="text"
+                    autoFocus
+                    value={newName}
+                    onChange={(e) => setNewName(e.target.value)}
+                    className="px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-lg font-bold outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 dark:text-white transition-all w-full"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">Battery Capacity (kW)</label>
+                  <input 
+                    type="number"
+                    step="0.1"
+                    value={batteryCapacity}
+                    onChange={(e) => setBatteryCapacity(e.target.value)}
+                    className="px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-lg font-bold outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 dark:text-white transition-all w-full"
+                  />
+                </div>
+                <div className="flex items-center gap-2">
+                  <button 
+                    onClick={handleSaveSettings}
+                    disabled={isUpdatingName}
+                    className="px-4 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-all font-bold text-sm flex items-center gap-2 shadow-lg shadow-emerald-200 dark:shadow-none disabled:opacity-50"
+                  >
+                    {isUpdatingName ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
+                    Save Changes
+                  </button>
+                  <button 
+                    onClick={() => { setIsEditingName(false); setNewName(device.name); setBatteryCapacity(String(device.batteryCapacity || 2.5)); }}
+                    className="px-4 py-2 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 transition-all font-bold text-sm"
+                  >
+                    Cancel
+                  </button>
+                </div>
               </div>
             ) : (
               <div className="flex items-center gap-3">

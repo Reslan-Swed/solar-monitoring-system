@@ -155,7 +155,7 @@ export const ProfileSettings: React.FC<ProfileSettingsProps> = ({ user, onUserUp
             <button
               type="submit"
               disabled={isLoading || (nickName === user.name && email === user.email)}
-              className="px-6 py-2.5 bg-slate-900 dark:bg-slate-800 text-white rounded-xl text-sm font-bold hover:bg-slate-800 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2"
+              className="px-6 py-2.5 bg-amber-500 text-white rounded-xl text-sm font-bold hover:bg-amber-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2"
             >
               {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Update Information'}
             </button>

@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
-import { X, Plus, Loader2, Cpu, CheckCircle2, AlertCircle } from 'lucide-react';
+import { X, Plus, Loader2, Cpu, CheckCircle2, AlertCircle, Zap } from 'lucide-react';
 import { api } from '@/src/lib/api';
 import { cn } from '@/src/lib/utils';
 
 interface AddDeviceModalProps {
   onClose: () => void;
   onSuccess: () => void;
+  onSaveCapacity?: (deviceSn: string, capacity: number) => void;
 }
 
-export const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ onClose, onSuccess }) => {
+export const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ onClose, onSuccess, onSaveCapacity }) => {
   const [deviceSn, setDeviceSn] = useState('');
+  const [batteryCapacity, setBatteryCapacity] = useState('2.5');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -24,6 +26,11 @@ export const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ onClose, onSucce
 
     try {
       await api.addDevice(deviceSn.trim());
+      
+      if (onSaveCapacity) {
+        onSaveCapacity(deviceSn.trim(), parseFloat(batteryCapacity) || 2.5);
+      }
+
       setIsSuccess(true);
       setTimeout(() => {
         onSuccess();
@@ -111,6 +118,26 @@ export const AddDeviceModal: React.FC<AddDeviceModalProps> = ({ onClose, onSucce
                 </div>
                 <p className="text-[10px] text-slate-400 dark:text-slate-500 ml-1 leading-relaxed">
                   Enter the unique serial number found on the device's identification plate or in the original packaging.
+                </p>
+              </div>
+
+              <div className="space-y-3">
+                <label className="block text-xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">
+                  Battery Capacity (kW) <span className="text-[10px] lowercase italic font-normal">(Optional)</span>
+                </label>
+                <div className="relative group">
+                  <Zap className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 dark:text-slate-500 group-focus-within:text-amber-500 transition-colors" />
+                  <input
+                    type="number"
+                    step="0.1"
+                    value={batteryCapacity}
+                    onChange={(e) => setBatteryCapacity(e.target.value)}
+                    placeholder="E.g. 2.5"
+                    className="w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 dark:text-white outline-none transition-all font-bold tracking-wider"
+                  />
+                </div>
+                <p className="text-[10px] text-slate-400 dark:text-slate-500 ml-1 leading-relaxed">
+                  Total capacity of connected battery bank in kilowatts. Default is 2.5 kW.
                 </p>
               </div>
 

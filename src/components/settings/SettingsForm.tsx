@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { DeviceSettings, User } from '@/src/types';
-import { Save, Bell, Sliders, Shield, User as UserIcon, Link2, BellRing, Key, ShieldCheck, Sun, Moon, Palette } from 'lucide-react';
+import { Save, Bell, Sliders, Shield, User as UserIcon, Link2, BellRing, Key, ShieldCheck, Sun, Moon, Palette, Loader2, Check } from 'lucide-react';
 import { cn } from '@/src/lib/utils';
 import { ProfileSettings } from './ProfileSettings';
+import { motion, AnimatePresence } from 'motion/react';
 
 interface SettingsFormProps {
   settings: DeviceSettings;
@@ -19,15 +20,33 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({
   onPreviewTheme,
   user, 
   onUserUpdate, 
-  onLogout 
+  onLogout
 }) => {
   const [activeSettingsTab, setActiveSettingsTab] = useState('Profile');
   const [formData, setFormData] = useState<DeviceSettings>(settings);
+  const [isSaving, setIsSaving] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   // Sync formData with settings when settings change externally (e.g. from preview)
   useEffect(() => {
     setFormData(prev => ({ ...prev, theme: settings.theme }));
   }, [settings.theme]);
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    setShowSuccess(false);
+    
+    // Simulate a brief delay for UX if it's too fast
+    await new Promise(resolve => setTimeout(resolve, 800));
+    
+    onSave(formData);
+    
+    setIsSaving(false);
+    setShowSuccess(true);
+    
+    // Hide success message after 3 seconds
+    setTimeout(() => setShowSuccess(false), 3000);
+  };
 
   const tabs = [
     { id: 'Profile', icon: UserIcon },
@@ -152,16 +171,44 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({
                 </div>
               ))}
 
+              <AnimatePresence>
+                {showSuccess && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 text-sm font-bold justify-end"
+                  >
+                    <Check className="w-4 h-4" />
+                    Configuration saved successfully
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
               <div className="flex items-center justify-end gap-3 pt-4">
-                <button className="px-6 py-2.5 text-sm font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-all">
+                <button 
+                  onClick={() => setFormData(settings)}
+                  disabled={isSaving}
+                  className="px-6 py-2.5 text-sm font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-all disabled:opacity-50"
+                >
                   Discard Changes
                 </button>
                 <button 
-                  onClick={() => onSave(formData)}
-                  className="px-6 py-2.5 bg-amber-500 text-white rounded-lg text-sm font-bold hover:bg-amber-600 transition-all shadow-lg shadow-amber-200 dark:shadow-amber-900/20 flex items-center gap-2"
+                  onClick={handleSave}
+                  disabled={isSaving}
+                  className="px-6 py-2.5 bg-amber-500 text-white rounded-lg text-sm font-bold hover:bg-amber-600 transition-all shadow-lg shadow-amber-200 dark:shadow-amber-900/20 flex items-center gap-2 min-w-[160px] justify-center disabled:opacity-70"
                 >
-                  <Save className="w-4 h-4" />
-                  Save Configuration
+                  {isSaving ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    <>
+                      <Save className="w-4 h-4" />
+                      Save Configuration
+                    </>
+                  )}
                 </button>
               </div>
             </div>
@@ -227,13 +274,37 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({
                 </div>
               ))}
 
+              <AnimatePresence>
+                {showSuccess && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 text-sm font-bold justify-end"
+                  >
+                    <Check className="w-4 h-4" />
+                    Appearance settings updated
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
               <div className="flex items-center justify-end gap-3 pt-4">
                 <button 
-                  onClick={() => onSave(formData)}
-                  className="px-6 py-2.5 bg-amber-500 text-white rounded-lg text-sm font-bold hover:bg-amber-600 transition-all shadow-lg shadow-amber-200 dark:shadow-amber-900/20 flex items-center gap-2"
+                  onClick={handleSave}
+                  disabled={isSaving}
+                  className="px-6 py-2.5 bg-amber-500 text-white rounded-lg text-sm font-bold hover:bg-amber-600 transition-all shadow-lg shadow-amber-200 dark:shadow-amber-900/20 flex items-center gap-2 min-w-[160px] justify-center disabled:opacity-70"
                 >
-                  <Save className="w-4 h-4" />
-                  Save Configuration
+                  {isSaving ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    <>
+                      <Save className="w-4 h-4" />
+                      Save Configuration
+                    </>
+                  )}
                 </button>
               </div>
             </div>
