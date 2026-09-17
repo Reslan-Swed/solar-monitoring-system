@@ -76,16 +76,17 @@ const mapApiDeviceToDevice = (item: DeviceListItem): Device => {
   const savedCapacities = JSON.parse(localStorage.getItem('deviceBatteryCapacities') || '{}');
   const batteryCapacity = savedCapacities[item.deviceSn] !== undefined 
     ? parseFloat(savedCapacities[item.deviceSn]) 
-    : 2.5;
+    : 0;
 
   return {
     id: String(item.id),
     name: item.nickName || `Device ${item.deviceSn}`,
     deviceSn: item.deviceSn,
     type: 'inverter',
+    isOnline: item.onlineStatus === 1,
     status: item.onlineStatus === 1 ? 'online' : 'offline',
-    pvOutput: parseFloat(item.pvInputPower) || 0,
-    currentOutput: parseFloat(item.acOutputActivePowerTotal) || 0,
+    pvOutput: parseFloat(item.pvInputPower) || 0.0,
+    currentOutput: parseFloat(item.acOutputActivePowerTotal) || 0.0,
     efficiency: 95,
     location: item.nation || 'Unknown',
     lastUpdated: 'Just now',

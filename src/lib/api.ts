@@ -169,6 +169,13 @@ class ApiClient {
     return this.post<Record<string, any>>('paramSet/getParam', { deviceSn });
   }
 
+  async forceRefreshParams(deviceSn: string): Promise<void> {
+    await this.post('paramSet/setParam', { 
+      deviceSn, 
+      commands: JSON.stringify({ FORCE_TRAN: "2" }) 
+    });
+  }
+
   async setDeviceParams(deviceSn: string, commands: Record<string, string>): Promise<void> {
     await this.post('paramSet/setParam', { 
       deviceSn, 

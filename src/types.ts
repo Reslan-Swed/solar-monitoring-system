@@ -13,6 +13,7 @@ export type Device = {
   name: string;
   deviceSn: string;
   type: 'panel' | 'inverter' | 'battery';
+  isOnline: boolean;
   status: DeviceStatus;
   pvOutput: number; // in Watt
   currentOutput: number; // in Watt

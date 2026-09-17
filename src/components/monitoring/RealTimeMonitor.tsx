@@ -17,10 +17,10 @@ interface RealTimeMonitorProps {
   onBack: () => void;
 }
 
-const StatusRow: React.FC<{ 
-  label: string; 
-  value: number | undefined; 
-  mapping: Record<number, { label: string; color: string; bg: string }> 
+const StatusRow: React.FC<{
+  label: string;
+  value: number | undefined;
+  mapping: Record<number, { label: string; color: string; bg: string }>
 }> = ({ label, value, mapping }) => {
   const status = value !== undefined ? mapping[value] : null;
   return (
@@ -41,6 +41,7 @@ export const RealTimeMonitor: React.FC<RealTimeMonitorProps> = ({ device, onBack
   const [telemetry, setTelemetry] = useState<TelemetryData | null>(null);
   const [history, setHistory] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isOnline, setIsOnline] = useState(false);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
   const lastFetchedSn = React.useRef<string | null>(null);
@@ -48,14 +49,21 @@ export const RealTimeMonitor: React.FC<RealTimeMonitorProps> = ({ device, onBack
 
   const fetchData = useCallback(async () => {
     if (!device || isFetching.current) return;
-    
+
     isFetching.current = true;
     setIsLoading(true);
     try {
       const data = await api.getRealTimeTelemetry(device.deviceSn);
       setTelemetry(data);
-      setLastUpdated(new Date());
       lastFetchedSn.current = device.deviceSn;
+
+      setIsOnline(device.isOnline);
+
+      // Update lastUpdated only if device is online
+      const apiDate = new Date(data.createTime.replace(/-/g, '/'));
+      if (!isNaN(apiDate.getTime())) {
+        setLastUpdated(apiDate);
+      }
 
       // Update local history for the chart
       const newHistoryPoint = {
@@ -82,7 +90,7 @@ export const RealTimeMonitor: React.FC<RealTimeMonitorProps> = ({ device, onBack
     if (lastFetchedSn.current !== device.deviceSn) {
       fetchData();
     }
-    
+
     const interval = setInterval(fetchData, 10000); // Auto update every 10s
     return () => clearInterval(interval);
   }, [fetchData, device.deviceSn]);
@@ -153,13 +161,16 @@ export const RealTimeMonitor: React.FC<RealTimeMonitorProps> = ({ device, onBack
           <div>
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white">{device.name}</h2>
             <div className="flex items-center gap-2 mt-1">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span className={cn(
+                "w-2 h-2 rounded-full animate-pulse",
+                isOnline ? "bg-emerald-500" : "bg-slate-400"
+              )}></span>
               <p className="text-sm text-slate-500 dark:text-slate-400">
                 Live Sn: <span className="font-mono text-xs">{device.deviceSn}</span>
               </p>
               {lastUpdated && (
                 <p className="text-xs text-slate-400 dark:text-slate-500 border-l border-slate-200 dark:border-slate-800 pl-2">
-                  Last updated: {lastUpdated.toLocaleTimeString()}
+                  Last updated: {lastUpdated.toLocaleString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
                 </p>
               )}
             </div>
@@ -328,34 +339,34 @@ export const RealTimeMonitor: React.FC<RealTimeMonitorProps> = ({ device, onBack
               System Status
             </h3>
             <div className="space-y-4">
-              <StatusRow 
-                label="Solar Status" 
-                value={telemetry?.statusSolar1} 
+              <StatusRow
+                label="Solar Status"
+                value={telemetry?.statusSolar1}
                 mapping={{
                   0: { label: 'No Solar', color: 'text-slate-500', bg: 'bg-slate-50 dark:bg-slate-800' },
                   1: { label: 'Solar Available', color: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-900/20' }
                 }}
               />
-              <StatusRow 
-                label="Battery Status" 
-                value={(+telemetry?.batteryDischargingPower) > 0 ? 2 : (+telemetry?.batteryChargingPower) > 0 ? 1 : 0} 
+              <StatusRow
+                label="Battery Status"
+                value={(+telemetry?.batteryDischargingPower) > 0 ? 2 : (+telemetry?.batteryChargingPower) > 0 ? 1 : 0}
                 mapping={{
                   0: { label: 'Fully Charged', color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-900/20' },
                   1: { label: 'Charging', color: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-900/20' },
                   2: { label: 'Discharging', color: 'text-amber-500', bg: 'bg-amber-50 dark:bg-amber-900/20' }
                 }}
               />
-              <StatusRow 
-                label="Grid Status" 
-                value={telemetry?.statusGrid} 
+              <StatusRow
+                label="Grid Status"
+                value={telemetry?.statusGrid}
                 mapping={{
                   0: { label: 'No Grid', color: 'text-slate-500', bg: 'bg-slate-50 dark:bg-slate-800' },
                   1: { label: 'Grid Available', color: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-900/20' }
                 }}
               />
-              <StatusRow 
-                label="Load Status" 
-                value={telemetry?.statusLoad} 
+              <StatusRow
+                label="Load Status"
+                value={telemetry?.statusLoad}
                 mapping={{
                   0: { label: 'No Load', color: 'text-slate-500', bg: 'bg-slate-50 dark:bg-slate-800' },
                   1: { label: 'Active Load', color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-900/20' }

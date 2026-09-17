@@ -21,10 +21,13 @@ export const DeviceParameterSettings: React.FC<DeviceParameterSettingsProps> = (
   const [success, setSuccess] = useState(false);
   const [batteryCapacity, setBatteryCapacity] = useState(String(device.batteryCapacity || 2.5));
 
-  const fetchParams = async () => {
+  const fetchParams = async (force = false) => {
     setIsLoading(true);
     setError(null);
     try {
+      if (force) {
+        await api.forceRefreshParams(device.deviceSn);
+      }
       const data = await api.getDeviceParams(device.deviceSn);
       setParams(data);
       setInitialParams(data);
@@ -36,7 +39,7 @@ export const DeviceParameterSettings: React.FC<DeviceParameterSettingsProps> = (
   };
 
   useEffect(() => {
-    fetchParams();
+    fetchParams(true);
   }, [device.deviceSn]);
 
   const handleUpdateParam = (name: string, newValue: string) => {
@@ -131,7 +134,7 @@ export const DeviceParameterSettings: React.FC<DeviceParameterSettingsProps> = (
 
         <div className="flex items-center gap-3">
           <button 
-            onClick={fetchParams}
+            onClick={() => fetchParams(true)}
             disabled={isLoading || isSaving}
             className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all disabled:opacity-50"
           >
